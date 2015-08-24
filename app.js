@@ -5,6 +5,9 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
+var hbs = require('hbs');
+var fs = require('fs');
+
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var submit = require('./routes/submit');
@@ -27,9 +30,24 @@ app.use('/', routes);
 app.use('/users', users);
 app.use('/submit', submit);
 
+//setup hbs partials
+var partialsDir = __dirname + '/views/partials';
+
+var filenames = fs.readdirSync(partialsDir);
+
+filenames.forEach(function (filename) {
+  var matches = /^([^.]+).hbs$/.exec(filename);
+  if (!matches) {
+    return;
+  }
+  var name = matches[1];
+  var template = fs.readFileSync(partialsDir + '/' + filename, 'utf8');
+  hbs.registerPartial(name, template);
+});
+
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-    console.dir(req);
+    // console.dir(req);
     var err = new Error('Not Found');
     err.status = 404;
     next(err);
