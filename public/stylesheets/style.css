@@ -1,5 +1,4 @@
 body {
-  padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
@@ -8,5 +7,10 @@ a {
 }
 
 form div {
+	padding-top: 10px;
+}
+
+.account-created {
+	padding-left: 20px;
 	padding-top: 10px;
 }
