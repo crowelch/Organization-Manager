@@ -2,6 +2,10 @@ body {
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
+.body {
+	padding: 50px;
+}
+
 a {
   color: #00B7FF;
 }
@@ -10,7 +14,11 @@ form div {
 	padding-top: 10px;
 }
 
-.account-created {
+.pad-left-10 {
 	padding-left: 20px;
 	padding-top: 10px;
+}
+
+.org-btn {
+	margin-top: 15px;
 }

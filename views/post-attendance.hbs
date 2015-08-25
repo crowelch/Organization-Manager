@@ -1,0 +1,11 @@
+{{#if cardExists}}
+	Thanks for signing in!
+	<form method="GET" action="/attendance">
+		<button class="btn btn-primary org-btn">Sign in another</button>
+	</form>
+{{else}}
+	<p>Oh no, you don't exist! Would you like to exist?</p>
+	<form method="GET" action="/create-account">
+		<button class="btn btn-primary org-btn">Exist</button>
+	</form>
+{{/if}}
