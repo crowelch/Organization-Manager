@@ -16,19 +16,36 @@ router.post('/create-account', function(req, res, next) {
 });
 
 router.get('/attendance', function(req, res, next) {
-	if(req.body.login) {
-		req.flash('success', {
-			msg: 'Good job!'
-		});
-		req.body.login = false;
-	} else {
-		res.render('attendance');
-	}
+	res.render('attendance');
 });
 
 router.post('/attendance', function(req, res, next) {
 	console.log(req.body.card);
+	res.redirect('/post-attendance');
+});
 
+router.get('/post-attendance', function(req, res, next) {
+	console.log(req.body.card);
+	res.render('post-attendance', {
+		cardExists: verifyCard(req.body.card)
+	});
+});
+
+router.get('/meetings', function(req, res, next) {
+	res.render('meetings');
+});
+
+router.get('meeting', function(req, res, next) {
+	res.render('meeting');
+});
+
+router.get('/meeting-create', function(req, res, next) {
+	res.render('meeting_create');
+});
+
+router.post('/meeting-create', function(req, res, next) {
+	console.log(req.body.date);
+	res.render('meeting_post_create');
 });
 
 router.get('/login', function(req, res, next) {
@@ -36,8 +53,14 @@ router.get('/login', function(req, res, next) {
 });
 
 function verifyCard(card) {
-	//if card in db, sign in
-	//otherwise throw err
+	//if user exists, add to meeting
+	// check to ensure only once per meeting per person
+	// otherwise throw err
+	return true;
+}
+
+function saveMeeting(meetingDate) {
+	//create meeting in db
 }
 
 module.exports = router;
