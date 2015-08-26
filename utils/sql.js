@@ -10,8 +10,7 @@ exports.putUser = function(userObject) {
 	return new Promise(function(resolve, reject) {
 		console.log(userObject);
 		hashed(userObject.card).then(function(result) {
-			delete userObject.card;
-			userObject.cardHash = result;
+			userObject.card = result;
 
 			var connection = mysql.createConnection(params);
 			connection.connect();
@@ -47,41 +46,55 @@ exports.signIn = function(card) {
 	var connection = mysql.createConnection(params);
 	connection.connect();
 
-	//Check that a meeting is happening today
-	// new Promise(function(resolve, reject) {
-	// 	connection.query("SELECT * FROM meetings WHERE date=" + today, function(err, result) {
-	// 		if(err) {
-	// 			reject(err);
-	// 		}
-	// 		resolve(result);
-	// 	});
-	// }).then(function(result) {
-	// 	if(result === []) {
-	// 		reject('no meeting');
-	// 	}
-		// meetingKey = result.meetingKey;
-		// console.log('meetingKey:', meetingKey);
+	// Check that a meeting is happening today
+	new Promise(function(resolve, reject) {
+		connection.query("SELECT * FROM meetings WHERE date=" + today, function(err, result) {
+			if(err) {
+				reject(err);
+			}
+			console.log('meeting?', result);
+			resolve(result[0].meetingKey);
+		});
+	// Assign meetingKey
+	}).then(function(result) {
+		if(result === []) {
+			console.log('no meeting');
+		}
+
+		meetingKey = result
+		console.log('meetingKey:', meetingKey);
+	}, function(error) {
+		console.log(error);
+	// Find user
+	}).then(function(result) {
 		connection.query("SELECT * FROM members", function(err, result) {
 			if(err) {
 				console.log('err', err);
 			}
-			console.log('result', result);
-			hashCompare(result, card);
-			// resolve(result);
+
+			hashCompare(result, card).then(function(result) {
+				var membersKey = result;
+				console.log('membersKey', membersKey);
+				connection.query("INSERT INTO attendance SET ?", {
+					memberKey: membersKey,
+					meetingKey: meetingKey
+				}, function(err, result) {
+					console.log('err in insertattnd', err);
+					console.log('attend?', result);
+
+					connection.end(function(err) {
+						if(err) {
+							console.log(err);
+						}
+					});
+				});
+			}, function(error) {
+				console.log(error);
+			});
 		});
-	// }, function(error) {
-
-	// }).then(function(result) {
-
-	// }, function(error) {
-	// 	console.log(error);
-	// }).then(function() {
-	// 	connection.end(function(err) {
-	// 		if(err) {
-	// 			console.log(err);
-	// 		}
-	// 	});
-	// });
+	}, function(error) {
+		console.log(error);
+	});
 }
 
 exports.createMeeting = function(date) {
@@ -108,48 +121,38 @@ exports.createMeeting = function(date) {
 
 function hashed(data) {
 	return new Promise(function(resolve, reject) {
-		bcrypt.genSalt(10, function(err, salt) {
-		    bcrypt.hash('B4c0/\/', salt, function(err, hash) {
+	    bcrypt.hash(data, 10, function(err, hash) {
+			if(err) {
+				reject(err)
+			}
+
+			console.log(hash);
+
+			console.log(bcrypt.compare(data, hash, function(err, same) {
 				if(err) {
-					reject(err)
+					console.log('initcompareerr', err);
 				}
+				console.log(same);
+			}))
 
-				resolve(hash);
-			});
+			resolve(hash);
 		});
-		// bcrypt.genSalt(10, function(err, salt) {
-		//     bcrypt.hash(data, salt, function(err, hash) {
-		//         if(err) {
-		//         	reject(err);
-		//         }
-
-		//         console.log(hash);
-		//         resolve(hash);
-		//     });
-		// });
 	});
 }
 
 function hashCompare(members, card) {
-	console.log('yo');
-	_.forEach(members, function(member) {
-		bcrypt.compare(card, member.cardHash, function(err, same) {
-			console.log(err, same);
-		});
-	});
 	return new Promise(function(resolve, reject) {
 		_.forEach(members, function(member) {
-			console.log(member.membersKey);
-			console.log(card, member.cardHash);
-			if(bcrypt.compareSync(card, member.cardHash)) {
-				console.log('success');
-				resolve(member);
-			} else {
-				console.log('log');
-			}
+			console.log(card, member.card);
+			bcrypt.compare(card, member.card, function(err, same) {
+				if(err) {
+					console.log('compare err', err);
+				} else if(same) {
+					resolve(member.membersKey)
+				}
+			});
 		});
-		console.log('done;');
-		reject('no match found');
+		// reject('card not found');
 	});
 }
 
