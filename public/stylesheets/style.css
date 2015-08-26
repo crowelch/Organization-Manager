@@ -22,3 +22,7 @@ form div {
 .org-btn {
 	margin-top: 15px;
 }
+
+.hidden {
+	visibility: hidden;
+}

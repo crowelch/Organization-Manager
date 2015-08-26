@@ -1,4 +1,5 @@
 var express = require('express');
+var Promise = require('es6-promise').Promise;
 var router = express.Router();
 var db = require('../utils/sql');
 
@@ -12,8 +13,18 @@ router.get('/create-account', function(req, res, next) {
 });
 
 router.post('/create-account', function(req, res, next) {
-	db.putUser(req.body);
-	res.render('account_created');
+	db.putUser(req.body).then(function(result) {
+		res.render('account_created', {
+		id: result
+	});
+
+	}, function(error) {
+		console.log(error);
+	});
+});
+
+router.post('/account-attendance', function(req, res, next) {
+	res.render('account_attendance');
 });
 
 router.get('/attendance', function(req, res, next) {
@@ -21,8 +32,11 @@ router.get('/attendance', function(req, res, next) {
 });
 
 router.post('/attendance', function(req, res, next) {
+	console.log('card:', req.body.card);
+	db.signIn(req.body.card);
 	res.redirect('/post-attendance');
 });
+
 
 router.get('/post-attendance', function(req, res, next) {
 	res.render('post-attendance', {
@@ -43,6 +57,7 @@ router.get('/meeting-create', function(req, res, next) {
 });
 
 router.post('/meeting-create', function(req, res, next) {
+	db.createMeeting(req.body.date);
 	res.render('meeting_post_create');
 });
 
