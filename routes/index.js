@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var db = require('../utils/sql');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -11,7 +12,7 @@ router.get('/create-account', function(req, res, next) {
 });
 
 router.post('/create-account', function(req, res, next) {
-	console.dir(req.body);
+	db.putUser(req.body);
 	res.render('account_created');
 });
 
@@ -20,12 +21,10 @@ router.get('/attendance', function(req, res, next) {
 });
 
 router.post('/attendance', function(req, res, next) {
-	console.log(req.body.card);
 	res.redirect('/post-attendance');
 });
 
 router.get('/post-attendance', function(req, res, next) {
-	console.log(req.body.card);
 	res.render('post-attendance', {
 		cardExists: verifyCard(req.body.card)
 	});
@@ -44,7 +43,6 @@ router.get('/meeting-create', function(req, res, next) {
 });
 
 router.post('/meeting-create', function(req, res, next) {
-	console.log(req.body.date);
 	res.render('meeting_post_create');
 });
 
