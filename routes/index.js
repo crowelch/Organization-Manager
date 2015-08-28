@@ -1,6 +1,8 @@
 var express = require('express');
 var Promise = require('es6-promise').Promise;
 var router = express.Router();
+var lookup = require('../utils/lookup').lookupByIso;
+var lookupById = require('../utils/lookup').lookupByUcid
 var db = require('../utils/sql');
 
 /* GET home page. */
@@ -39,9 +41,7 @@ router.post('/attendance', function(req, res, next) {
 
 
 router.get('/post-attendance', function(req, res, next) {
-	res.render('post-attendance', {
-		cardExists: verifyCard(req.body.card)
-	});
+	res.render('post-attendance');
 });
 
 router.get('/meetings', function(req, res, next) {
@@ -65,15 +65,30 @@ router.get('/login', function(req, res, next) {
 	res.render('login');
 });
 
-function verifyCard(card) {
-	//if user exists, add to meeting
-	// check to ensure only once per meeting per person
-	// otherwise throw err
-	return true;
-}
+router.get('/lookup', function(req, res, next) {
+	res.render('lookup');
+});
 
-function saveMeeting(meetingDate) {
-	//create meeting in db
-}
+router.post('/lookup', function(req, res, next) {
+	new Promise(function(resolve, reject) {
+		lookup(req.body.card, function(error, result) {
+			if(error) {
+				reject(error);
+			}
+			resolve(result);
+		});
+	}).then(function(person) {
+		res.render('create_account', {
+		firstName: person.first_name,
+		lastName: person.last_name,
+		major: person.major,
+		gradYear: person.graduation,
+		email: person.email
+	});
+
+	}, function(error) {
+		console.log('error:', error);
+	});
+});
 
 module.exports = router;
