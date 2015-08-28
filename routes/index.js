@@ -15,10 +15,11 @@ router.get('/create-account', function(req, res, next) {
 });
 
 router.post('/create-account', function(req, res, next) {
+
 	db.putUser(req.body).then(function(result) {
-		res.render('account_created', {
-		id: result
-	});
+		res.render('post-attendance', {
+
+		});
 
 	}, function(error) {
 		console.log(error);
@@ -35,8 +36,17 @@ router.get('/attendance', function(req, res, next) {
 
 router.post('/attendance', function(req, res, next) {
 	console.log('card:', req.body.card);
-	db.signIn(req.body.card);
-	res.redirect('/post-attendance');
+	db.signIn(req.body.card).then(function(result) {
+		console.log(result);
+		res.render('/post-attendance', {
+
+		});
+	}, function(error) {
+		console.log(error);
+		res.render('/post-attendance', {
+			error: true
+		});
+	});
 });
 
 
@@ -83,7 +93,8 @@ router.post('/lookup', function(req, res, next) {
 		lastName: person.last_name,
 		major: person.major,
 		gradYear: person.graduation,
-		email: person.email
+		email: person.email,
+		card: req.body.card
 	});
 
 	}, function(error) {
