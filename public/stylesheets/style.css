@@ -26,3 +26,7 @@ form div {
 .hidden {
 	visibility: hidden;
 }
+
+.landing {
+	list-style: none;
+}
