@@ -1,7 +1,9 @@
 <ul>
-	{{#each meeting}}
-		<li>
-			{{meeting.date}}
-		</li>
+	{{#each this}}
+		{{#if date}}
+			<li>
+				{{date}}
+			</li>
+		{{/if}}
 	{{/each}}
 </ul>

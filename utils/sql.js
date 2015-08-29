@@ -138,6 +138,26 @@ exports.getMembers = function() {
 	});
 };
 
+exports.getMeetings = function() {
+	return new Promise(function(resolve, reject) {
+		var connection = mysql.createConnection(params);
+		connection.connect();
+
+		connection.query("SELECT * FROM meetings", function(err, result) {
+			if(err) {
+				reject(err);
+			}
+			resolve(result);
+		});
+
+		connection.end(function(err) {
+			if(err) {
+				console.log(err);
+			}
+		});
+	});
+};
+
 function hashed(data) {
 	return new Promise(function(resolve, reject) {
 	    bcrypt.hash(data, 10, function(err, hash) {

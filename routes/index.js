@@ -44,10 +44,6 @@ router.get('/post-attendance', function(req, res, next) {
 	res.render('post-attendance');
 });
 
-router.get('/meetings', function(req, res, next) {
-	res.render('meetings');
-});
-
 router.get('meeting', function(req, res, next) {
 	res.render('meeting');
 });
