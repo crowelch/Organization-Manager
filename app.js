@@ -12,6 +12,7 @@ var routes = require('./routes/index');
 var users = require('./routes/users');
 var submit = require('./routes/submit');
 var members = require('./routes/members');
+var meetings = require('./routes/meetings');
 
 var app = express();
 
@@ -31,6 +32,7 @@ app.use('/', routes);
 app.use('/users', users);
 app.use('/submit', submit);
 app.use('/members', members);
+app.use('/meetings', meetings);
 
 //setup hbs partials
 var partialsDir = __dirname + '/views/partials';
