@@ -2,7 +2,6 @@ var mysql = require('mysql');
 var Promise = require('es6-promise').Promise;
 var _ = require('lodash');
 var params = require('../config/secrets.js').params;
-var db = require('../utils/door');
 
 exports.getAllowedUsers = function() {
 	return new Promise(function(resolve, reject) {
@@ -43,7 +42,7 @@ exports.saveLog = function(log) {
 			if(err) {
 				reject(err);
 			}
-			resolve(result.insertId);
+			resolve(result);
 		});
 
 		connection.end(function(err) {

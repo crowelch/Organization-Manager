@@ -13,8 +13,7 @@ router.get('/users', function(req, res, next) {
 
 /* POST door logs */
 router.post('/log', function(req, res, next) {
-	console.dir(req.body);
-	db.saveLog(req.body.log).then(function(result) {
+	db.saveLog(req.body).then(function(result) {
 		res.send(result);
 	}, function(error) {
 		res.send(error);
