@@ -11,6 +11,7 @@ var fs = require('fs');
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var submit = require('./routes/submit');
+var door = require('./routes/door');
 var members = require('./routes/members');
 
 var app = express();
@@ -30,6 +31,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', routes);
 app.use('/users', users);
 app.use('/submit', submit);
+app.use('/door', door);
 app.use('/members', members);
 
 //setup hbs partials
