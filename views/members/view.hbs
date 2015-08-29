@@ -1,0 +1,24 @@
+<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+	{{#each this}}
+		{{#if firstName}}
+			<div class="panel panel-default">
+			  <div class="panel-heading" data-toggle="collapse" href="#{{mNumber}}-collapse" data-parent="#accordion">
+			    <h3 class="panel-title collapsed">{{firstName}} {{lastName}}</h3>
+			  </div>
+			  <div class="panel-collapse collapse in" id="{{mNumber}}-collapse" role="tabpanel">
+				  <div class="panel-body">
+				    <ul>
+				    	<li>{{email}}</li>
+				    	<li>{{mNumber}}</li>
+				    	<li>{{college}}</li>
+				    	<li>{{major}}</li>
+				    	<li>{{gradLevel}}</li>
+				    	<li>{{gradYear}}</li>
+				    	<li>{{phone}}</li>
+				    </ul>
+				  </div>
+				</div>
+			</div>
+		{{/if}}
+	{{/each}}
+</div>

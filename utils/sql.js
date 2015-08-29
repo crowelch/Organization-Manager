@@ -32,12 +32,11 @@ exports.putUser = function(userObject) {
 			reject(err);
 		});
 	});
-}
+};
 
 exports.signIn = function(card) {
 	//else insert meeting key and userId into attendance table
 	//display success
-
 	var meetingKey;
 	var userKey;
 	var today = mysql.escape(moment().format('YYYY-MM-DD'));
@@ -61,7 +60,7 @@ exports.signIn = function(card) {
 			console.log('no meeting');
 		}
 
-		meetingKey = result
+		meetingKey = result;
 		console.log('meetingKey:', meetingKey);
 	}, function(error) {
 		console.log(error);
@@ -95,13 +94,13 @@ exports.signIn = function(card) {
 	}, function(error) {
 		console.log(error);
 	});
-}
+};
 
 exports.createMeeting = function(date) {
 	console.log(date);
 	var insertDate = {
 		date: date
-	}
+	};
 
 	var connection = mysql.createConnection(params);
 	connection.connect();
@@ -117,13 +116,33 @@ exports.createMeeting = function(date) {
 			console.log(err);
 		}
 	});
-}
+};
+
+exports.getMembers = function() {
+	return new Promise(function(resolve, reject) {
+		var connection = mysql.createConnection(params);
+		connection.connect();
+
+		connection.query("SELECT * FROM members", function(err, result) {
+			if(err) {
+				reject(err);
+			}
+			resolve(result);
+		});
+
+		connection.end(function(err) {
+			if(err) {
+				console.log(err);
+			}
+		});
+	});
+};
 
 function hashed(data) {
 	return new Promise(function(resolve, reject) {
 	    bcrypt.hash(data, 10, function(err, hash) {
 			if(err) {
-				reject(err)
+				reject(err);
 			}
 
 			console.log(hash);
@@ -133,7 +152,7 @@ function hashed(data) {
 					console.log('initcompareerr', err);
 				}
 				console.log(same);
-			}))
+			}));
 
 			resolve(hash);
 		});
@@ -148,7 +167,7 @@ function hashCompare(members, card) {
 				if(err) {
 					console.log('compare err', err);
 				} else if(same) {
-					resolve(member.membersKey)
+					resolve(member.membersKey);
 				}
 			});
 		});
