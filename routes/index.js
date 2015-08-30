@@ -10,21 +10,6 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
-router.get('/create-account', function(req, res, next) {
-	res.render('create_account');
-});
-
-router.post('/create-account', function(req, res, next) {
-	db.putUser(req.body).then(function(result) {
-		res.render('account_created', {
-		id: result
-	});
-
-	}, function(error) {
-		console.log(error);
-	});
-});
-
 router.post('/account-attendance', function(req, res, next) {
 	res.render('account_attendance');
 });
@@ -44,18 +29,6 @@ router.get('/post-attendance', function(req, res, next) {
 	res.render('post-attendance');
 });
 
-router.get('meeting', function(req, res, next) {
-	res.render('meeting');
-});
-
-router.get('/meeting-create', function(req, res, next) {
-	res.render('meeting_create');
-});
-
-router.post('/meeting-create', function(req, res, next) {
-	db.createMeeting(req.body.date);
-	res.render('meeting_post_create');
-});
 
 router.get('/login', function(req, res, next) {
 	res.render('login');

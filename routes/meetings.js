@@ -28,4 +28,11 @@ router.get('/create', function(req, res, next) {
 	res.render('meeting_create');
 });
 
+/* POST create meetings */
+router.post('/create', function(req, res, next) {
+	db.createMeeting(req.body.date);
+	res.render('meeting_post_create');
+});
+
+
 module.exports = router;

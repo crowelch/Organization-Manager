@@ -22,4 +22,19 @@ router.get('/view', function(req, res, next) {
 	res.render('members/view', req.members);
 });
 
+router.get('/create', function(req, res, next) {
+	res.render('create_account');
+});
+
+router.post('/create', function(req, res, next) {
+	db.putUser(req.body).then(function(result) {
+		res.render('account_created', {
+			id: result
+		});
+	}, function(error) {
+		res.send(error);
+	});
+});
+
+
 module.exports = router;
