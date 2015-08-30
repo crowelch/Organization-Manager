@@ -7,7 +7,7 @@ var db = require('../utils/sql');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
+  res.render('index', { title: 'Organization Manager' });
 });
 
 router.post('/account-attendance', function(req, res, next) {
