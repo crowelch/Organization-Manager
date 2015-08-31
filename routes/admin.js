@@ -44,14 +44,14 @@ router.get('/login', function(req, res, next) {
  });
 
 //disable this feature on production
-router.get('signup', function(req, res) {
+router.get('create', function(req, res) {
 	if (req.user) return res.redirect('/');
-	res.render('account/signup', {
+	res.render('admin/create', {
 		title: 'Create Account'
 	});
-};
+});
 
-router.post('signup', function(req, res, next) {
+router.post('create', function(req, res, next) {
 	req.assert('email', 'Email is not valid').isEmail();
 	req.assert('password', 'Password must be at least 4 characters long').len(4);
 	req.assert('confirmPassword', 'Passwords do not match').equals(req.body.password);
@@ -81,6 +81,6 @@ router.post('signup', function(req, res, next) {
 			});
 		});
 	});
-};
+});
 
 module.exports = router;
