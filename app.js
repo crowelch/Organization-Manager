@@ -13,6 +13,7 @@ var users = require('./routes/users');
 var submit = require('./routes/submit');
 var members = require('./routes/members');
 var meetings = require('./routes/meetings');
+var admin = require('./routes/admin');
 
 var app = express();
 
