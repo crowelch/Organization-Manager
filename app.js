@@ -4,6 +4,10 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var exphbs = require('express-handlebars');
+var expressValidator = require('express-validator');
+var helpers = require('./utils/helpers');
+
 
 var hbs = require('hbs');
 var fs = require('fs');
@@ -14,11 +18,19 @@ var submit = require('./routes/submit');
 var members = require('./routes/members');
 var meetings = require('./routes/meetings');
 
+
+var passportConf = require('./config/passport');
+
 var app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'hbs');
+app.engine("hbs", exphbs({
+    defaultLayout: "main",
+    extname: ".hbs",
+    helpers: helpers
+}));
+app.set("view engine", ".hbs");
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(__dirname + '/public/favicon.ico'));
@@ -33,6 +45,7 @@ app.use('/users', users);
 app.use('/submit', submit);
 app.use('/members', members);
 app.use('/meetings', meetings);
+app.use('/admin', admin);
 
 //setup hbs partials
 var partialsDir = __dirname + '/views/partials';
