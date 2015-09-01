@@ -49,7 +49,7 @@ router.get('signup', function(req, res) {
 	res.render('account/signup', {
 		title: 'Create Account'
 	});
-};
+});
 
 router.post('signup', function(req, res, next) {
 	req.assert('email', 'Email is not valid').isEmail();
@@ -81,6 +81,6 @@ router.post('signup', function(req, res, next) {
 			});
 		});
 	});
-};
+});
 
 module.exports = router;
