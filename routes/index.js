@@ -17,10 +17,10 @@ router.get('/create-account', function(req, res, next) {
 router.post('/create-account', function(req, res, next) {
 
 	db.putUser(req.body).then(function(result) {
-		res.render('post-attendance', {
-		});
+		res.render('signup-post');
 	}, function(error) {
 		console.log(error);
+		res.render('signup-post', error);
 	});
 });
 
