@@ -18,7 +18,9 @@ exports.putUser = function(userObject) {
 					console.log('sql insert err', err.code);
 					if(err.code === 'ER_DUP_ENTRY') {
 						console.log('here');
-						reject('accountexists');
+						reject({
+							accountexists: true
+						});
 					} else {
 						reject(err);
 					}
