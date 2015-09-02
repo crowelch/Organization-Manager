@@ -14,6 +14,7 @@ var submit = require('./routes/submit');
 var door = require('./routes/door');
 var members = require('./routes/members');
 var meetings = require('./routes/meetings');
+var admin = require('./routes/admin');
 
 var app = express();
 

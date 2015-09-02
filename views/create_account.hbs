@@ -1,8 +1,8 @@
-<form method="POST" onsubmit="return validateInputs()">
+<form method="POST" onsubmit="return validateInputs()" action="/create-account">
 	<div class="form-group">
 		<label for="firstName" class="col-sm-3 control-label">First Name:</label>
 		<div class="col-sm-7">
-			<input type="text" name="firstName" id="firstName" value="{{firstName}}" placeholder="Luke" class="form-control">
+			<input type="text" name="firstName" id="firstName" value="{{firstName}}" placeholder="Luke" class="form-control" autofocus>
 		</div>
 	</div>
 	<div class="form-group">
@@ -59,7 +59,7 @@
 	<div class="form-group">
 		<label for="card" class="col-sm-3 control-label">Swipe Card:</label>
 		<div class="col-sm-7">
-			<input type="text" name="card" id="card" placeholder="asdfghjkl;" class="form-control">
+			<input type="text" name="card" id="card" value="{{card}}" placeholder="asdfghjkl;" class="form-control">
 		</div>
 	</div>
 	<div class="col-sm-offset-3 col-sm-7">
@@ -84,23 +84,25 @@
 		var card = $('#card').val();
 
 		if(firstName === '') {
-			console.log('empty firstName');
+			alert('first name required');
 		} else if(lastName === '') {
-			console.log('empty lastName');
-		} else if(email.toLowerCase().indexOf('uc.edu') < 0) {
-			console.log('not a uc email');
+			alert('last name required');
+		} else if(email === '') {
+			alert('UC email required');
+		}  else if(email.toLowerCase().indexOf('uc.edu') < 0) {
+			alert('please use a UC email');
 		} else if(phone === '') {
-			console.log('no phone');
+			alert('phone number required');
 		} else if(mNumber === '') {
-			console.log('no mNumber');
+			alert('M Number required');
 		} else if(college === '') {
-			console.log('empty college');
+			alert('college required');
 		} else if(major === '') {
-			console.log('empty major');
+			alert('major required');
 		} else if(gradYear === '') {
-			console.log('empty grad year');
+			alert('grad year required');
 		} else if(card === '') {
-			console.log('empty card');
+			alert('card swipe required');
 		} else {
 			return true;
 		}

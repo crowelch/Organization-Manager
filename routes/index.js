@@ -7,7 +7,7 @@ var db = require('../utils/sql');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
+  res.render('index', { title: 'Organization Manager' });
 });
 
 router.get('/create-account', function(req, res, next) {
@@ -15,18 +15,13 @@ router.get('/create-account', function(req, res, next) {
 });
 
 router.post('/create-account', function(req, res, next) {
-	db.putUser(req.body).then(function(result) {
-		res.render('account_created', {
-		id: result
-	});
 
+	db.putUser(req.body).then(function(result) {
+		res.render('post-attendance', {
+		});
 	}, function(error) {
 		console.log(error);
 	});
-});
-
-router.post('/account-attendance', function(req, res, next) {
-	res.render('account_attendance');
 });
 
 router.get('/attendance', function(req, res, next) {
@@ -35,27 +30,21 @@ router.get('/attendance', function(req, res, next) {
 
 router.post('/attendance', function(req, res, next) {
 	console.log('card:', req.body.card);
-	db.signIn(req.body.card);
-	res.redirect('/post-attendance');
-});
+	db.signIn(req.body.card).then(function(result) {
+		console.log(result);
+		res.render('signin-post', {
 
+		});
+	}, function(error) {
+		console.log(1, error);
+		res.render('signin-post', error);
+	});
+});
 
 router.get('/post-attendance', function(req, res, next) {
 	res.render('post-attendance');
 });
 
-router.get('meeting', function(req, res, next) {
-	res.render('meeting');
-});
-
-router.get('/meeting-create', function(req, res, next) {
-	res.render('meeting_create');
-});
-
-router.post('/meeting-create', function(req, res, next) {
-	db.createMeeting(req.body.date);
-	res.render('meeting_post_create');
-});
 
 router.get('/login', function(req, res, next) {
 	res.render('login');
@@ -79,7 +68,8 @@ router.post('/lookup', function(req, res, next) {
 		lastName: person.last_name,
 		major: person.major,
 		gradYear: person.graduation,
-		email: person.email
+		email: person.email,
+		card: req.body.card
 	});
 
 	}, function(error) {

@@ -5,10 +5,9 @@ var Promise = require('es6-promise').Promise;
 var _ = require('lodash');
 var params = require('../config/secrets.js').params;
 
-
 exports.putUser = function(userObject) {
+	console.dir(userObject);
 	return new Promise(function(resolve, reject) {
-		console.log(userObject);
 		hashed(userObject.card).then(function(result) {
 			userObject.card = result;
 
@@ -16,18 +15,24 @@ exports.putUser = function(userObject) {
 			connection.connect();
 			connection.query("INSERT INTO members SET ?", userObject, function(err, result) {
 				if(err) {
-					reject(err);
+					console.log('sql insert err', err.code);
+					if(err.code === 'ER_DUP_ENTRY') {
+						console.log('here');
+						reject('accountexists');
+					} else {
+						reject(err);
+					}
+				} else {
+					console.log('member ID:', result.insertId);
+					console.log(result);
+					resolve(result.insertId);
 				}
-				console.log('member ID:', result.insertId);
-				console.log(result);
-				resolve(result.insertId);
 			});
 			connection.end(function(err) {
 				if(err) {
-					reject(err);
+					console.log(err);
 				}
 			});
-
 		}, function(err) {
 			reject(err);
 		});
@@ -35,51 +40,46 @@ exports.putUser = function(userObject) {
 };
 
 exports.signIn = function(card) {
-	//else insert meeting key and userId into attendance table
-	//display success
-	var meetingKey;
-	var userKey;
-	var today = mysql.escape(moment().format('YYYY-MM-DD'));
-	console.log(typeof today);
-
-	var connection = mysql.createConnection(params);
-	connection.connect();
-
-	// Check that a meeting is happening today
-	new Promise(function(resolve, reject) {
-		connection.query("SELECT * FROM meetings WHERE date=" + today, function(err, result) {
-			if(err) {
-				reject(err);
+	return new Promise(function(resolve, reject) {
+		var meetingKey;
+		var userKey;
+		// Check that a meeting is happening today
+		checkMeeting().then(function(result) {
+			if(result === []) {
+				reject('No meeting today you scurvy curr!');
 			}
-			console.log('meeting?', result);
-			resolve(result[0].meetingKey);
-		});
-	// Assign meetingKey
-	}).then(function(result) {
-		if(result === []) {
-			console.log('no meeting');
-		}
+			meetingKey = result;
+		}, function(error) {
+			reject(error);
+		}).then(function() {
+			console.log('ji');
+			hashCompare(card).then(function(result) {
+				var memberKey = result;
+				if(memberKey === undefined) {
+					reject('Member not found, have you created an account?');
+				}
+				console.log('memberKey', memberKey);
 
-		meetingKey = result;
-		console.log('meetingKey:', meetingKey);
-	}, function(error) {
-		console.log(error);
-	// Find user
-	}).then(function(result) {
-		connection.query("SELECT * FROM members", function(err, result) {
-			if(err) {
-				console.log('err', err);
-			}
-
-			hashCompare(result, card).then(function(result) {
-				var membersKey = result;
-				console.log('membersKey', membersKey);
+				var connection = mysql.createConnection(params);
+				connection.connect();
 				connection.query("INSERT INTO attendance SET ?", {
-					memberKey: membersKey,
+					memberKey: memberKey,
 					meetingKey: meetingKey
 				}, function(err, result) {
-					console.log('err in insertattnd', err);
-					console.log('attend?', result);
+					if(err) {
+						if(err.code ==='ER_DUP_ENTRY') {
+							reject({
+								meetingError: {
+									alreadySignedIn: true
+								}
+							});
+							return;
+						}
+						console.log('err in insertattnd', err);
+					} else {
+						resolve(result);
+						console.log('attend?', result);
+					}
 
 					connection.end(function(err) {
 						if(err) {
@@ -90,9 +90,9 @@ exports.signIn = function(card) {
 			}, function(error) {
 				console.log(error);
 			});
+		}, function(error) {
+			console.log(error);
 		});
-	}, function(error) {
-		console.log(error);
 	});
 };
 
@@ -166,32 +166,70 @@ function hashed(data) {
 			}
 
 			console.log(hash);
-
-			console.log(bcrypt.compare(data, hash, function(err, same) {
-				if(err) {
-					console.log('initcompareerr', err);
-				}
-				console.log(same);
-			}));
-
 			resolve(hash);
 		});
 	});
 }
 
-function hashCompare(members, card) {
+function hashCompare(card) {
 	return new Promise(function(resolve, reject) {
-		_.forEach(members, function(member) {
-			console.log(card, member.card);
-			bcrypt.compare(card, member.card, function(err, same) {
-				if(err) {
-					console.log('compare err', err);
-				} else if(same) {
-					resolve(member.membersKey);
-				}
+		var connection = mysql.createConnection(params);
+		connection.connect();
+		connection.query("SELECT * FROM members", function(err, result) {
+			if(err) {
+				console.log('err', err);
+			}
+
+			_.forEach(result, function(member) {
+				// console.log('caaaard',card, member.card);
+				bcrypt.compare(card, member.card, function(err, same) {
+					if(err) {
+						console.log('compare err', err);
+					} else if(same) {
+						console.log('samesies');
+						resolve(member.membersKey);
+					}
+				});
 			});
+			console.log('uh oh');
 		});
-		// reject('card not found');
+
+		connection.end(function(err) {
+			if(err) {
+				console.log('hashcardcannotcloseerrror', err);
+			}
+		});
+	});
+}
+
+function checkMeeting() {
+	return new Promise(function(resolve, reject) {
+		var today = mysql.escape(moment().format('YYYY-MM-DD'));
+		var connection = mysql.createConnection(params);
+		connection.connect();
+
+		connection.query("SELECT * FROM meetings WHERE date=" + today, function(err, result) {
+			if(err) {
+				reject(err);
+			} else {
+				console.log('meeting?', result);
+				if(result.length <= 0) {
+					reject({
+						meetingError: {
+							noMeeting: true
+						}
+					});
+				} else {
+					resolve(result[0].meetingKey);
+				}
+			}
+		});
+
+		connection.end(function(err) {
+			if(err) {
+				console.log('mtgcannotcloseerrror', err);
+			}
+		});
 	});
 }
 
@@ -200,10 +238,10 @@ function dateCheck(date) {
 	var meeting = moment(date);
 
 	return new Promise(function(resolve, reject) {
-		if(today.year() === meeting.year()
-			&& today.month() == meeting.month()
-			&& today.date() === meeting.date()) {
-			resolve();
+		if(today.year() === meeting.year() &&
+			today.month() == meeting.month() &&
+			today.date() === meeting.date()) {
+				resolve();
 		} else {
 			reject('No meeting today you scurvy curr!');
 		}
