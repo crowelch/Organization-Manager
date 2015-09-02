@@ -24,10 +24,6 @@ router.post('/create-account', function(req, res, next) {
 	});
 });
 
-router.post('/account-attendance', function(req, res, next) {
-	res.render('account_attendance');
-});
-
 router.get('/attendance', function(req, res, next) {
 	res.render('attendance');
 });
@@ -36,17 +32,14 @@ router.post('/attendance', function(req, res, next) {
 	console.log('card:', req.body.card);
 	db.signIn(req.body.card).then(function(result) {
 		console.log(result);
-		res.render('/post-attendance', {
+		res.render('signin-post', {
 
 		});
 	}, function(error) {
-		console.log(error);
-		res.render('/post-attendance', {
-			error: true
-		});
+		console.log(1, error);
+		res.render('signin-post', error);
 	});
 });
-
 
 router.get('/post-attendance', function(req, res, next) {
 	res.render('post-attendance');

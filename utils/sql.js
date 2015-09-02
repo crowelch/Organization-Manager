@@ -48,14 +48,14 @@ exports.signIn = function(card) {
 			if(result === []) {
 				reject('No meeting today you scurvy curr!');
 			}
-			meetingKey = result
+			meetingKey = result;
 		}, function(error) {
 			reject(error);
 		}).then(function() {
 			console.log('ji');
 			hashCompare(card).then(function(result) {
 				var memberKey = result;
-				if(memberkey === undefined) {
+				if(memberKey === undefined) {
 					reject('Member not found, have you created an account?');
 				}
 				console.log('memberKey', memberKey);
@@ -67,10 +67,19 @@ exports.signIn = function(card) {
 					meetingKey: meetingKey
 				}, function(err, result) {
 					if(err) {
+						if(err.code ==='ER_DUP_ENTRY') {
+							reject({
+								meetingError: {
+									alreadySignedIn: true
+								}
+							});
+							return;
+						}
 						console.log('err in insertattnd', err);
+					} else {
+						resolve(result);
+						console.log('attend?', result);
 					}
-					resolve(result);
-					console.log('attend?', result);
 
 					connection.end(function(err) {
 						if(err) {
@@ -78,6 +87,8 @@ exports.signIn = function(card) {
 						}
 					});
 				});
+			}, function(error) {
+				console.log(error);
 			});
 		}, function(error) {
 			console.log(error);
@@ -155,14 +166,6 @@ function hashed(data) {
 			}
 
 			console.log(hash);
-
-			console.log(bcrypt.compare(data, hash, function(err, same) {
-				if(err) {
-					console.log('initcompareerr', err);
-				}
-				console.log(same);
-			}));
-
 			resolve(hash);
 		});
 	});
@@ -178,21 +181,23 @@ function hashCompare(card) {
 			}
 
 			_.forEach(result, function(member) {
-				console.log('caaaard',card, member.card);
+				// console.log('caaaard',card, member.card);
 				bcrypt.compare(card, member.card, function(err, same) {
 					if(err) {
 						console.log('compare err', err);
 					} else if(same) {
 						console.log('samesies');
-						resolve(member.memberkey);
+						resolve(member.membersKey);
 					}
 				});
 			});
-			reject('ohno');
+			console.log('uh oh');
 		});
 
 		connection.end(function(err) {
-			console.log('hashcardcannotcloseerrror', err);
+			if(err) {
+				console.log('hashcardcannotcloseerrror', err);
+			}
 		});
 	});
 }
@@ -206,15 +211,26 @@ function checkMeeting() {
 		connection.query("SELECT * FROM meetings WHERE date=" + today, function(err, result) {
 			if(err) {
 				reject(err);
+			} else {
+				console.log('meeting?', result);
+				if(result.length <= 0) {
+					reject({
+						meetingError: {
+							noMeeting: true
+						}
+					});
+				} else {
+					resolve(result[0].meetingKey);
+				}
 			}
-			console.log('meeting?', result);
-			resolve(result[0].meetingKey);
 		});
 
 		connection.end(function(err) {
-			console.log('hashcardcannotcloseerrror', err);
+			if(err) {
+				console.log('mtgcannotcloseerrror', err);
+			}
 		});
-	})
+	});
 }
 
 function dateCheck(date) {
@@ -222,10 +238,10 @@ function dateCheck(date) {
 	var meeting = moment(date);
 
 	return new Promise(function(resolve, reject) {
-		if(today.year() === meeting.year()
-			&& today.month() == meeting.month()
-			&& today.date() === meeting.date()) {
-			resolve();
+		if(today.year() === meeting.year() &&
+			today.month() == meeting.month() &&
+			today.date() === meeting.date()) {
+				resolve();
 		} else {
 			reject('No meeting today you scurvy curr!');
 		}
