@@ -206,7 +206,8 @@ function hashCompare(card) {
 
 function checkMeeting() {
 	return new Promise(function(resolve, reject) {
-		var today = mysql.escape(moment().format('YYYY-MM-DD'));
+		var today = mysql.escape(moment().utcOffset(-4).format('YYYY-MM-DD HH'));
+		console.log('today:', today);
 		var connection = mysql.createConnection(params);
 		connection.connect();
 
