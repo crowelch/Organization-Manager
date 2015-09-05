@@ -17,13 +17,18 @@ router.post('/log', function(req, res, next) {
 		res.send(result);
 	}, function(error) {
 		res.send(error);
-	})
+	});
+});
+
+/* GET register id */
+router.get('/register', function(req, res, next) {
+	res.render('door/register');
 });
 
 /* POST register id */
 router.post('/register', function(req, res, next) {
-	console.dir(req.body);
-	res.send('respond with a resource');
+	res.send(req.body);
+	db.registerDevice(req.body.card, req.body.device);
 });
 
 /* GET control member access */

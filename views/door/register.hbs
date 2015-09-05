@@ -1,0 +1,39 @@
+<h1 class="text-center">Register a Device</h1>
+<form method="POST" onsubmit="return validateDevice()">
+	<div class="form-group">
+		<label for="card" class="col-sm-3 control-label">Card:</label>
+		<div class="col-sm-7">
+			<input type="text" name="card" id="card" placeholder="cardcardcardcardcardcard" class="form-control" autofocus>
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="device" class="col-sm-3 control-label">Device:</label>
+		<div class="col-sm-7">
+			<input type="text" name="device" id="device" placeholder="ab:cd:ef:gh" class="form-control">
+		</div>
+	</div>
+	<div class="col-sm-offset-3 col-sm-7">
+    	<button type="submit" class="btn btn-success">
+    		<span class="fa fa-user-plus">
+    		</span>
+    		Lookup
+    	</button>
+    </div>
+</form>
+
+<script>
+	function validateDevice() {
+		var device = $('#device').val();
+		var card = $('#card').val();
+
+		if(card === '') {
+			alert('no card');
+			return false;
+		} else if(device === '') {
+			alert('no device');
+			return false;
+		} else {
+			return true;
+		}
+	}
+</script>

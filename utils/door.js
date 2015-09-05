@@ -2,6 +2,8 @@ var mysql = require('mysql');
 var Promise = require('es6-promise').Promise;
 var _ = require('lodash');
 var params = require('../config/secrets.js').params;
+var sha1 = require('sha1');
+var db = require('./sql.js');
 
 exports.getAllowedUsers = function() {
 	return new Promise(function(resolve, reject) {
@@ -19,7 +21,7 @@ exports.getAllowedUsers = function() {
 			};
 			_.forEach(result, function(key) {
 				console.log(key);
-				responseJson.ids.push(key.doorAccessKey)
+				responseJson.ids.push(key.doorAccessKey);
 			});
 			console.dir(responseJson);
 			resolve(responseJson);
@@ -70,5 +72,11 @@ exports.getLogs = function() {
 				reject(err);
 			}
 		});
+	});
+};
+
+exports.registerDevice = function(card, device) {
+	return new Promise(function(resolve, reject) {
+
 	});
 };
