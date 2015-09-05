@@ -4,11 +4,12 @@ var moment = require('moment');
 var Promise = require('es6-promise').Promise;
 var _ = require('lodash');
 var params = require('../config/secrets.js').params;
+var utils = require('./utils');
 
 exports.putUser = function(userObject) {
 	console.dir(userObject);
 	return new Promise(function(resolve, reject) {
-		hashed(userObject.card).then(function(result) {
+		utils.hashed(userObject.card).then(function(result) {
 			userObject.card = result;
 
 			var connection = mysql.createConnection(params);
@@ -46,7 +47,7 @@ exports.signIn = function(card) {
 		var meetingKey;
 		var userKey;
 		// Check that a meeting is happening today
-		checkMeeting().then(function(result) {
+		utils.checkMeeting().then(function(result) {
 			if(result === []) {
 				reject('No meeting today you scurvy curr!');
 			}
@@ -55,7 +56,7 @@ exports.signIn = function(card) {
 			reject(error);
 		}).then(function() {
 			console.log('ji');
-			hashCompare(card).then(function(result) {
+			utils.hashCompare(card).then(function(result) {
 				var memberKey = result;
 				if(memberKey === undefined) {
 					reject('Member not found, have you created an account?');
@@ -159,94 +160,3 @@ exports.getMeetings = function() {
 		});
 	});
 };
-
-function hashed(data) {
-	return new Promise(function(resolve, reject) {
-	    bcrypt.hash(data, 10, function(err, hash) {
-			if(err) {
-				reject(err);
-			}
-
-			console.log(hash);
-			resolve(hash);
-		});
-	});
-}
-
-function hashCompare(card) {
-	return new Promise(function(resolve, reject) {
-		var connection = mysql.createConnection(params);
-		connection.connect();
-		connection.query("SELECT * FROM members", function(err, result) {
-			if(err) {
-				console.log('err', err);
-			}
-
-			_.forEach(result, function(member) {
-				// console.log('caaaard',card, member.card);
-				bcrypt.compare(card, member.card, function(err, same) {
-					if(err) {
-						console.log('compare err', err);
-					} else if(same) {
-						console.log('samesies');
-						resolve(member.membersKey);
-					}
-				});
-			});
-			console.log('uh oh');
-		});
-
-		connection.end(function(err) {
-			if(err) {
-				console.log('hashcardcannotcloseerrror', err);
-			}
-		});
-	});
-}
-
-function checkMeeting() {
-	return new Promise(function(resolve, reject) {
-		var today = mysql.escape(moment().utcOffset(-4).format('YYYY-MM-DD HH'));
-		console.log('today:', today);
-		var connection = mysql.createConnection(params);
-		connection.connect();
-
-		connection.query("SELECT * FROM meetings WHERE date=" + today, function(err, result) {
-			if(err) {
-				reject(err);
-			} else {
-				console.log('meeting?', result);
-				if(result.length <= 0) {
-					reject({
-						meetingError: {
-							noMeeting: true
-						}
-					});
-				} else {
-					resolve(result[0].meetingKey);
-				}
-			}
-		});
-
-		connection.end(function(err) {
-			if(err) {
-				console.log('mtgcannotcloseerrror', err);
-			}
-		});
-	});
-}
-
-function dateCheck(date) {
-	var today = moment();
-	var meeting = moment(date);
-
-	return new Promise(function(resolve, reject) {
-		if(today.year() === meeting.year() &&
-			today.month() == meeting.month() &&
-			today.date() === meeting.date()) {
-				resolve();
-		} else {
-			reject('No meeting today you scurvy curr!');
-		}
-	});
-}
