@@ -2,7 +2,7 @@ var express = require('express');
 var Promise = require('es6-promise').Promise;
 var router = express.Router();
 var lookup = require('../utils/lookup').lookupByIso;
-var lookupById = require('../utils/lookup').lookupByUcid
+var lookupById = require('../utils/lookup').lookupByUcid;
 var db = require('../utils/sql');
 
 /* GET home page. */

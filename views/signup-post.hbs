@@ -11,24 +11,6 @@
 	</form>
 {{else}}
 	<h2 class="text-center">Thanks for signing up!</h2>
-	<div class="text-center">
-		<form method="GET" action="/lookup">
-			<div>
-		    	<button type="submit" class="btn btn-warning">
-		    		<span class="fa fa-user-plus">
-		    		</span>
-		    		Create an account
-		    	</button>
-		    </div>
-		</form>
-		<form method="GET" action="/attendance">
-			<div>
-		    	<button type="submit" class="btn btn-primary">
-		    		<span class="fa fa-user-plus">
-		    		</span>
-		    		Sign in
-		    	</button>
-		    </div>
-		</form>
-	</div>
+	{{>create-account-button}}
+	{{>signin-button}}
 {{/if}}

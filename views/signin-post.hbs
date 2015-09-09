@@ -1,15 +1,15 @@
 {{#if meetingError}}
 	{{#if meetingError.noMeeting}}
 		<h2 class="text-center">There's no meeting today you scurvy curr!</h2>
-		{{>create-account}}
+		{{>create-account-button}}
 	{{/if}}
 	{{#if meetingError.alreadySignedIn}}
 		<h2 class="text-center">You already signed in!!</h2>
-		{{>create-account}}
+		{{>create-account-button}}
 		{{>signin-button}}
 	{{/if}}
 {{else}}
 	<h2 class="text-center">Thanks for signing in!</h2>
-	{{>create-account}}
+	{{>create-account-button}}
 	{{>signin-button}}
 {{/if}}
