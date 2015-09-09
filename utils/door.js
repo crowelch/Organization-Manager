@@ -3,7 +3,7 @@ var Promise = require('es6-promise').Promise;
 var _ = require('lodash');
 var params = require('../config/secrets.js').params;
 var sha1 = require('sha1');
-var db = require('./sql.js');
+var utils = require('./utils.js');
 
 exports.getAllowedUsers = function() {
 	return new Promise(function(resolve, reject) {
@@ -77,6 +77,12 @@ exports.getLogs = function() {
 
 exports.registerDevice = function(card, device) {
 	return new Promise(function(resolve, reject) {
+		utils.hashCompare(card).then(function(result) {
+			if(result === undefined) {
+				reject('Member not found');
+			} else {
 
+			}
+		});
 	});
 };
