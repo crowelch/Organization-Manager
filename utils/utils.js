@@ -38,8 +38,9 @@ exports.hashCompare = function(card) {
 
 
 exports.checkMeeting = function() {
+	console.log('in checkMeeting');
 	return new Promise(function(resolve, reject) {
-		var today = mysql.escape(moment().utcOffset(-4).format('YYYY-MM-DD HH'));
+		var today = mysql.escape(moment().utcOffset(-4).format('YYYY-MM-DD'));
 		console.log('today:', today);
 		var connection = mysql.createConnection(params);
 		connection.connect();

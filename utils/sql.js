@@ -48,6 +48,7 @@ exports.signIn = function(card) {
 		var userKey;
 		// Check that a meeting is happening today
 		utils.checkMeeting().then(function(result) {
+			console.log('after checkmeeting');
 			if(result === []) {
 				reject('No meeting today you scurvy curr!');
 			}
