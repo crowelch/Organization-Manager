@@ -14,7 +14,9 @@
     	</button>
     </div>
 </form>
-
+<div id="loading" class="spinner-loader" style="visibility: hidden;">
+  Loading…
+</div>
 <script>
 	function validateCard() {
 		var card = $('#card').val();
@@ -26,6 +28,7 @@
 		// 	alert('Please swipe your card again');
 		// 	return false;
 		} else {
+			document.getElementById("loading").style.visibility = "visible";
 			return true;
 		}
 	}
