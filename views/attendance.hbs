@@ -20,8 +20,11 @@
 		var card = $('#card').val();
 
 		if(card === '') {
-			console.log('ohno');
+			console.log('no card');
 			return false;
+		// } else if(card.length < 8) {
+		// 	alert('Please swipe your card again');
+		// 	return false;
 		} else {
 			return true;
 		}
