@@ -8,6 +8,11 @@
 		{{>create-account-button}}
 		{{>signin-button}}
 	{{/if}}
+	{{#if meetingError.noAccount}}
+		<h2 class="text-center">You need to create an account</h2>
+		{{>create-account-button}}
+		{{>signin-button}}
+	{{/if}}
 {{else}}
 	<h2 class="text-center">Thanks for signing in!</h2>
 	{{>create-account-button}}

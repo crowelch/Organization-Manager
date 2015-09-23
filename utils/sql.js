@@ -56,43 +56,49 @@ exports.signIn = function(card) {
 		}, function(error) {
 			reject(error);
 		}).then(function() {
-			console.log('ji');
+			console.log('about to check member');
 			utils.hashCompare(card).then(function(result) {
 				var memberKey = result;
 				if(memberKey === undefined) {
 					reject('Member not found, have you created an account?');
-				}
-				console.log('memberKey', memberKey);
+				} else {
+					console.log('memberKey', memberKey);
 
-				var connection = mysql.createConnection(params);
-				connection.connect();
-				connection.query("INSERT INTO attendance SET ?", {
-					memberKey: memberKey,
-					meetingKey: meetingKey
-				}, function(err, result) {
-					if(err) {
-						if(err.code ==='ER_DUP_ENTRY') {
-							reject({
-								meetingError: {
-									alreadySignedIn: true
-								}
-							});
-							return;
-						}
-						console.log('err in insertattnd', err);
-					} else {
-						resolve(result);
-						console.log('attend?', result);
-					}
-
-					connection.end(function(err) {
+					var connection = mysql.createConnection(params);
+					connection.connect();
+					connection.query("INSERT INTO attendance SET ?", {
+						memberKey: memberKey,
+						meetingKey: meetingKey
+					}, function(err, result) {
 						if(err) {
-							console.log(err);
+							if(err.code ==='ER_DUP_ENTRY') {
+								reject({
+									meetingError: {
+										alreadySignedIn: true
+									}
+								});
+								return;
+							}
+							console.log('err in insertattnd', err);
+						} else {
+							resolve(result);
+							console.log('attend?', result);
 						}
+
+						connection.end(function(err) {
+							if(err) {
+								console.log(err);
+							}
+						});
 					});
-				});
+				}
 			}, function(error) {
-				console.log(error);
+				reject({
+					meetingError: {
+						noAccount: true
+					}
+				});
+				console.log('eyyyy:', error);
 			});
 		}, function(error) {
 			console.log(error);

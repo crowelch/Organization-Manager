@@ -1,4 +1,5 @@
 var mysql = require('mysql');
+var pasync = require('pasync');
 var bcrypt = require('bcrypt');
 var moment = require('moment');
 var Promise = require('es6-promise').Promise;
@@ -14,18 +15,23 @@ exports.hashCompare = function(card) {
 				console.log('err', err);
 			}
 
-			_.forEach(result, function(member) {
-				// console.log('caaaard',card, member.card);
-				bcrypt.compare(card, member.card, function(err, same) {
-					if(err) {
-						console.log('compare err', err);
-					} else if(same) {
-						console.log('samesies');
-						resolve(member.membersKey);
-					}
-				});
+			var membersKey = false;
+			pasync.each(result, function(member) {
+				if(bcrypt.compareSync(card, member.card)) {
+					membersKey = member.membersKey;
+				}
+			}).then(function() {
+				console.log('post hoc', membersKey);
+				if(membersKey) {
+					resolve(membersKey);
+				} else {
+					reject('no member found');
+				}
+			}, function(error) {
+				console.log(error);
+			}).catch(function(error) {
+				console.log('2', error);
 			});
-			console.log('uh oh');
 		});
 
 		connection.end(function(err) {
@@ -34,7 +40,7 @@ exports.hashCompare = function(card) {
 			}
 		});
 	});
-}
+};
 
 
 exports.checkMeeting = function() {
@@ -68,7 +74,7 @@ exports.checkMeeting = function() {
 			}
 		});
 	});
-}
+};
 
 exports.hashed = function(data) {
 	return new Promise(function(resolve, reject) {
@@ -81,4 +87,4 @@ exports.hashed = function(data) {
 			resolve(hash);
 		});
 	});
-}
+};
