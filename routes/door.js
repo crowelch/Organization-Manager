@@ -28,6 +28,7 @@ router.get('/users', function(req, res, next) {
 	    }
 	});
 });
+
 /* GET user ids for the door */
 router.get('/users/md5', function(req, res, next) {
 	var options = {
@@ -47,12 +48,39 @@ router.get('/users/md5', function(req, res, next) {
 	});
 });
 
+/* GET set user ids for the door */
+router.use('/users/add', function(req, res, next) {
+	db.getAllUsers().then(function(result) {
+		req.body.users = result;
+		next();
+	});
+});
+
+/* GET set user ids for the door */
+router.get('/users/add', function(req, res, next) {
+	res.render('door/add_user', {
+			users: req.body.users
+		});
+});
+
+/* POST set user ids for the door */
+ router.post('/users/add', function(req, res, next) {
+	console.log(req.body.sha, req.body.user);
+	var shaValue = req.body.sha;
+	var userId = req.body.user;
+	db.registerDevice(userId, shaValue).then(function(result) {
+		res.render('door/post_add_user');
+	}, function(error) {
+		res.send(error);
+	});
+});
+
 /* POST door logs */
 router.post('/log', function(req, res, next) {
 	db.saveLog(req.body).then(function(result) {
-		res.send(result);
+		res.render('ok', result);
 	}, function(error) {
-		res.send(error);
+		res.send('err', error);
 	});
 });
 

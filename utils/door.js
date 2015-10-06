@@ -97,13 +97,55 @@ exports.getLogs = function() {
 	});
 };
 
-exports.registerDevice = function(card, device) {
+exports.registerDevice = function(userId, device) {
 	return new Promise(function(resolve, reject) {
-		utils.hashCompare(card).then(function(result) {
-			if(result === undefined) {
-				reject('Member not found');
-			} else {
+		var access = {
+			doorAccessKey: device,
+			memberKey: userId,
+			accessAllowed: 1
+		};
 
+		var connection = mysql.createConnection(params);
+		connection.connect();
+
+		connection.query("INSERT INTO doorAccess SET ?", access, function(err, result) {
+			if(err) {
+				reject(err);
+			}
+			resolve(result);
+		});
+
+		connection.end(function(err) {
+			if(err) {
+				reject(err);
+			}
+		});
+
+	});
+};
+
+exports.getAllUsers = function() {
+	return new Promise(function(resolve, reject) {
+		var connection = mysql.createConnection(params);
+		connection.connect();
+
+		connection.query("SELECT * FROM members", function(err, result) {
+			if(err) {
+				reject(err);
+			}
+
+			result.sort(function(a, b) {
+			    var textA = a.firstName.toLowerCase();
+			    var textB = b.firstName.toLowerCase();
+			    return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+			});
+
+			resolve(result);
+		});
+
+		connection.end(function(err) {
+			if(err) {
+				reject(err);
 			}
 		});
 	});
