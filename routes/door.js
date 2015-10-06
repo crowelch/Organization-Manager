@@ -3,11 +3,47 @@ var router = express.Router();
 var db = require('../utils/door');
 
 /* GET user ids for the door */
-router.get('/users', function(req, res, next) {
+router.use('/users', function(req, res, next) {
 	db.getAllowedUsers().then(function(result) {
-		res.send(result);
+		next();
 	}, function(error) {
 		res.send(error);
+	});
+});
+
+/* GET user ids for the door */
+router.get('/users', function(req, res, next) {
+	var options = {
+	    root: 'public/',
+	};
+	var fileName = 'fightme.txt';
+
+	res.sendFile(fileName, options, function (err) {
+	    if (err) {
+	    	console.log(err);
+	    	res.status(err.status).end();
+	    }
+	    else {
+	    	console.log('Sent:', fileName);
+	    }
+	});
+});
+/* GET user ids for the door */
+router.get('/users/md5', function(req, res, next) {
+	var options = {
+	    root: 'public/',
+	};
+	var fileName = 'fightme.md5';
+
+	res.sendFile(fileName, options, function (err) {
+	    if (err) {
+	    	console.log(err);
+	    	res.status(err.status).end();
+	    }
+	    else {
+	    	console.log('Sent:', fileName);
+	    	//delete file?
+	    }
 	});
 });
 

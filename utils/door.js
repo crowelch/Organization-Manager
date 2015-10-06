@@ -4,6 +4,8 @@ var _ = require('lodash');
 var params = require('../config/secrets.js').params;
 var sha1 = require('sha1');
 var utils = require('./utils.js');
+var fs = require('fs');
+var md5 = require('md5');
 
 exports.getAllowedUsers = function() {
 	return new Promise(function(resolve, reject) {
@@ -15,16 +17,36 @@ exports.getAllowedUsers = function() {
 				reject(err);
 			}
 
-			console.log(result);
-			var responseJson = {
-				ids: []
-			};
+			console.log('access key result', result);
+			var fileString = "";
+
 			_.forEach(result, function(key) {
-				console.log(key);
-				responseJson.ids.push(key.doorAccessKey);
+				console.log('key:', key);
+				fileString += key.doorAccessKey;
+				fileString += '\n';
 			});
-			console.dir(responseJson);
-			resolve(responseJson);
+
+			console.log(fileString);
+
+			fs.writeFile('public/fightme.txt', fileString, function(error) {
+				if(error) {
+					reject('write file error:', error);
+				}
+
+				console.log('i am here');
+
+				fs.readFile('public/fightme.txt', function(err, buf) {
+					if(err) {
+						console.log(err);
+					} else {
+						console.log(buf);
+						console.log(md5(buf));
+						fs.writeFile('public/fightme.md5', md5(buf), function(error) {
+							resolve();
+						});
+					}
+				});
+			});
 		});
 
 		connection.end(function(err) {
