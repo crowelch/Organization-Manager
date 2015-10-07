@@ -57,51 +57,58 @@ exports.signIn = function(card) {
 			reject(error);
 		}).then(function() {
 			console.log('about to check member');
-			utils.hashCompare(card).then(function(result) {
-				var memberKey = result;
-				if(memberKey === undefined) {
-					reject('Member not found, have you created an account?');
-				} else {
-					console.log('memberKey', memberKey);
 
-					var connection = mysql.createConnection(params);
-					connection.connect();
-					connection.query("INSERT INTO attendance SET ?", {
-						memberKey: memberKey,
-						meetingKey: meetingKey
-					}, function(err, result) {
-						if(err) {
-							if(err.code ==='ER_DUP_ENTRY') {
-								reject({
-									meetingError: {
-										alreadySignedIn: true
-									}
-								});
-								return;
-							}
-							console.log('err in insertattnd', err);
-						} else {
-							resolve(result);
-							console.log('attend?', result);
-						}
-
-						connection.end(function(err) {
-							if(err) {
-								console.log(err);
-							}
-						});
-					});
-				}
+			utils.mNumberFinder(card).then(function(result){
+				console.log('hi');
 			}, function(error) {
-				reject({
-					meetingError: {
-						noAccount: true
-					}
-				});
-				console.log('eyyyy:', error);
+				console.log(error);
 			});
+
+			// utils.hashCompare(card).then(function(result) {
+			// 	var memberKey = result;
+			// 	if(memberKey === undefined) {
+			// 		reject('Member not found, have you created an account?');
+			// 	} else {
+			// 		console.log('memberKey', memberKey);
+
+			// 		var connection = mysql.createConnection(params);
+			// 		connection.connect();
+			// 		connection.query("INSERT INTO attendance SET ?", {
+			// 			memberKey: memberKey,
+			// 			meetingKey: meetingKey
+			// 		}, function(err, result) {
+			// 			if(err) {
+			// 				if(err.code ==='ER_DUP_ENTRY') {
+			// 					reject({
+			// 						meetingError: {
+			// 							alreadySignedIn: true
+			// 						}
+			// 					});
+			// 					return;
+			// 				}
+			// 				console.log('err in insertattnd', err);
+			// 			} else {
+			// 				resolve(result);
+			// 				console.log('attend?', result);
+			// 			}
+
+			// 			connection.end(function(err) {
+			// 				if(err) {
+			// 					console.log(err);
+			// 				}
+			// 			});
+			// 		});
+			// 	}
+			// }, function(error) {
+			// 	reject({
+			// 		meetingError: {
+			// 			noAccount: true
+			// 		}
+			// 	});
+			// 	console.log('eyyyy:', error);
+			// });
 		}, function(error) {
-			console.log(error);
+			console.log('y' + error);
 		});
 	});
 };
