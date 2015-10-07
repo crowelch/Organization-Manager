@@ -41,6 +41,23 @@ router.post('/attendance', function(req, res, next) {
 	});
 });
 
+router.get('/attendance-mnumber', function(req, res, next) {
+	res.render('meetings/attendance_mnumber');
+});
+
+router.post('/attendance-mnumber', function(req, res, next) {
+	console.log('m#:', req.body.mnumber);
+	db.signIn(req.body.mnumber).then(function(result) {
+		console.log(result);
+		res.render('signin-post', {
+
+		});
+	}, function(error) {
+		console.log(1, error);
+		res.render('signin-post', error);
+	});
+});
+
 router.get('/post-attendance', function(req, res, next) {
 	res.render('post-attendance');
 });

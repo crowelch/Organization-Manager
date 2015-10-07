@@ -1,0 +1,33 @@
+<h1 class="text-center">Sign In!</h1>
+{{!-- <form method="POST" onsubmit="return validateCard()"> --}}
+<form method="POST" onsubmit="return validateCard()">
+	<div class="form-group">
+		<label for="mnumber" class="col-sm-3 control-label">M#:</label>
+		<div class="col-sm-7">
+			<input type="text" name="mnumber" id="mnumber" placeholder="M09999999" class="form-control" autofocus>
+		</div>
+	</div>
+	<div class="col-sm-offset-3 col-sm-7">
+    	<button type="submit" class="btn btn-success">
+    		<span class="fa fa-user-plus">
+    		</span>
+    		Sign in
+    	</button>
+    </div>
+</form>
+<div id="loading" class="spinner-loader" style="visibility: hidden;">
+  Loading…
+</div>
+<script>
+	function validateMNumber() {
+		var mnumber = $('#mnumber').val();
+
+		if(mnumber === '' || mNumber.length <= 0) {
+			alert('no m#');
+			return false;
+		} else {
+			document.getElementById("loading").style.visibility = "visible";
+			return true;
+		}
+	}
+</script>
