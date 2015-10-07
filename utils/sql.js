@@ -6,6 +6,38 @@ var _ = require('lodash');
 var params = require('../config/secrets.js').params;
 var utils = require('./utils');
 
+// function connection(query, options) {
+// 	console.log('in connection');
+// 	function queryCallback(error, result) {
+// 		if(error) {
+// 			reject(error);
+// 		}
+// 		resolve(result);
+// 		endConnection();
+// 	}
+
+// 	function endConnection() {
+// 		connection.end(function(err) {
+// 			if(err) {
+// 				console.log(err);
+// 			}
+// 			console.log('in conn end of conn');
+// 		});
+// 	}
+
+// 	var connection = mysql.createConnection(params);
+// 	connection.connect();
+
+// 	return new Promise(function(resolve, reject) {
+// 		if(options) {
+// 			connection.query(query, options, queryCallback);
+// 		} else {
+// 			connection.query(query, queryCallback);
+// 		}
+// 	});
+
+// };
+
 exports.putUser = function(userObject) {
 	console.dir(userObject);
 	return new Promise(function(resolve, reject) {
@@ -41,6 +73,86 @@ exports.putUser = function(userObject) {
 		});
 	});
 };
+
+exports.betterSignIn = function(mnumber, card) {
+	//todo add m to number if missing, uppercase if there
+	return new Promise(function(resolve, reject) {
+		var meetingKey;
+		var userKey;
+		utils.checkMeeting().then(function(result) {
+			if(result === []) {
+				reject('No meeting today you scurvy curr!');
+			} else {
+				meetingKey = result;
+				return result;
+			}
+		}, function(error) {
+			reject(error);
+		}).then(function() {
+			if(mnumber) {
+				return utils.mNumberFinder(mnumber);
+			} else if(card) {
+				return utils.hashCompare(card);
+			} else {
+				reject('no card or mnumber provided');
+			}
+		}).then(function(userKey) {
+			console.log('back from mNumberFinder:', userKey);
+			if(meetingKey === undefined || userKey === undefined) {
+				console.log('ohno');
+				reject({
+					meetingError: {
+						databaseError: true
+					}
+				});
+			} else {
+				console.log('hi');
+				dbEnterSignIn(meetingKey, userKey).then(function(queryResponse) {
+					console.log('qr:', queryResponse);
+					resolve('')
+				}, function(error) {
+					reject(error);
+				});
+			}
+		}, function(error) {
+			reject(error);
+		});
+	});
+};
+
+function dbEnterSignIn(meetingKey, userKey) {
+	console.log('enter meeting attendance...');
+	return new Promise(function(resolve, reject) {
+		var connection = mysql.createConnection(params);
+		connection.connect(function(err) {
+			console.log('no?', err);
+		});
+		connection.query("INSERT INTO attendance SET ?", {
+			memberKey: userKey,
+			meetingKey: meetingKey
+		}, function(err, result) {
+			if(err) {
+				if(err.code === 'ER_DUP_ENTRY') {
+					reject({
+						meetingError: {
+							alreadySignedIn: true
+						}
+					});
+				}
+				console.log('err in insertattnd', err);
+			} else {
+				console.log('attend?', result);
+				resolve(result);
+			}
+
+			connection.end(function(err) {
+				if(err) {
+					console.log(err);
+				}
+			});
+		});
+	});
+}
 
 exports.signIn = function(card) {
 	return new Promise(function(resolve, reject) {

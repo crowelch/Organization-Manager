@@ -42,6 +42,41 @@ exports.hashCompare = function(card) {
 	});
 };
 
+exports.mNumberFinder = function(mnumber) {
+	console.log('in m#finder', mnumber);
+	return new Promise(function(resolve, reject) {
+		var connection = mysql.createConnection(params);
+		connection.connect();
+		connection.query("SELECT * FROM members WHERE mNumber=" + mysql.escape(mnumber), function(err, result) {
+			if(err) {
+				console.log('err', err);
+				reject({
+					meetingError: {
+						databaseError: true
+					}
+				});
+			}
+
+			console.log('member found! - ', result);
+			if(result.length <= 0) {
+				console.log('koi');
+				reject({
+					meetingError: {
+						noAccount: true
+					}
+  				});
+			} else {
+				resolve(result[0].membersKey);
+			}
+		});
+
+		connection.end(function(err) {
+			if(err) {
+				console.log('mnumberfindercannotcloseerrror', err);
+			}
+		});
+	});
+};
 
 exports.checkMeeting = function() {
 	console.log('in checkMeeting');
