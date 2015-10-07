@@ -47,7 +47,19 @@ router.get('/attendance-mnumber', function(req, res, next) {
 
 router.post('/attendance-mnumber', function(req, res, next) {
 	console.log('m#:', req.body.mnumber);
-	db.signIn(req.body.mnumber).then(function(result) {
+	var mnumber = req.body.mnumber;
+	if(mnumber.charAt(0) === 'm') {
+		mnumber = mnumber.replace('m', 'M');
+	}
+
+	console.log('ggggg', mnumber.charAt(0).toUpperCase());
+
+	if(mnumber.charAt(0).toUpperCase() !== 'M') {
+		mnumber = 'M' + mnumber;
+	}
+
+	console.log('mnumber:', mnumber);
+	db.betterSignIn(mnumber).then(function(result) {
 		console.log(result);
 		res.render('signin-post', {
 

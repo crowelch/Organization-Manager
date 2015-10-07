@@ -13,6 +13,11 @@
 		{{>create-account-button}}
 		{{>signin-button}}
 	{{/if}}
+	{{#if meetingError.databaseError}}
+		<h2 class="text-center">Databse lookup error</h2>
+		{{>create-account-button}}
+		{{>signin-button}}
+	{{/if}}
 {{else}}
 	<h2 class="text-center">Thanks for signing in!</h2>
 	{{>create-account-button}}
