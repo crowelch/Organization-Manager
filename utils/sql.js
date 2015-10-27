@@ -109,7 +109,7 @@ exports.betterSignIn = function(mnumber, card) {
 				console.log('hi');
 				dbEnterSignIn(meetingKey, userKey).then(function(queryResponse) {
 					console.log('qr:', queryResponse);
-					resolve('')
+					resolve('');
 				}, function(error) {
 					reject(error);
 				});
@@ -257,6 +257,41 @@ exports.getMembers = function() {
 				reject(err);
 			}
 			resolve(result);
+		});
+
+		connection.end(function(err) {
+			if(err) {
+				console.log(err);
+			}
+		});
+	});
+};
+
+exports.getMembersEmails = function() {
+	return new Promise(function(resolve, reject) {
+		var connection = mysql.createConnection(params);
+		connection.connect();
+
+		connection.query("SELECT email FROM members", function(err, result) {
+			if(err) {
+				reject(err);
+			}
+
+			var emailsCSV = "";
+
+			_.forEach(result, function(value, key) {
+				emailsCSV += value.email;
+				console.log(key);
+
+				if(key < result.length - 2) {
+					emailsCSV += ',';
+				}
+			});
+
+			console.dir(emailsCSV);
+			console.log(result.length);
+
+			resolve(emailsCSV);
 		});
 
 		connection.end(function(err) {
