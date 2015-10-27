@@ -36,5 +36,25 @@ router.post('/create', function(req, res, next) {
 	});
 });
 
+/* GET user emails */
+router.use('/emails', function(req, res, next) {
+	db.getMembersEmails().then(function(result) {
+		req.emails = result;
+		next();
+	}, function(error) {
+		req.error = error;
+		next();
+	});
+});
+
+
+/* GET user emails */
+router.get('/emails', function(req, res, next) {
+	// console.dir(req.members[1]);
+	if(req.error) {
+		res.send(req.error);
+	}
+	res.send(req.emails);
+});
 
 module.exports = router;
