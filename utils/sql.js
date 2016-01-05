@@ -7,38 +7,14 @@ var params = require('../config/secrets.js').params;
 var utils = require('./utils');
 var db = require('./db');
 
-exports.putUser = function(userObject) {
-	console.dir(userObject);
-	return new Promise(function(resolve, reject) {
-		utils.hashed(userObject.card).then(function(result) {
-			userObject.card = result;
-
-			var connection = mysql.createConnection(params);
-			connection.connect();
-			connection.query("INSERT INTO members SET ?", userObject, function(err, result) {
-				if(err) {
-					console.log('sql insert err', err.code);
-					if(err.code === 'ER_DUP_ENTRY') {
-						console.log('here');
-						reject({
-							accountexists: true
-						});
-					} else {
-						reject(err);
-					}
-				} else {
-					console.log('member ID:', result.insertId);
-					console.log(result);
-					resolve(result.insertId);
-				}
-			});
-			connection.end(function(err) {
-				if(err) {
-					console.log(err);
-				}
-			});
-		}, function(err) {
-			reject(err);
+exports.createMember = function(userObject) {
+	return new Promise(function(resolve) {
+		utils.hashCard(userObject.card).then(function(card) {
+			userObject.card = card;
+			console.log('goodbye');
+		}).then(function() {
+			console.log('helllooooo');
+			resolve(db.insert('INSERT INTO members SET ?', userObject));
 		});
 	});
 };
