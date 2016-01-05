@@ -111,15 +111,14 @@ exports.checkMeeting = function() {
 	});
 };
 
-exports.hashed = function(data) {
+exports.hashCard = function(data) {
 	return new Promise(function(resolve, reject) {
 	    bcrypt.hash(data, 10, function(err, hash) {
 			if(err) {
 				reject(err);
+			} else {
+				resolve(hash);
 			}
-
-			console.log(hash);
-			resolve(hash);
 		});
 	});
 };
