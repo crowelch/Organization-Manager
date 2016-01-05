@@ -29,7 +29,7 @@ router.get('/attendance', function(req, res, next) {
 
 router.post('/attendance', function(req, res, next) {
 	console.log('card:', req.body.card);
-	db.signIn(req.body.card).then(function(result) {
+	db.cardSignIn(req.body.card).then(function(result) {
 		console.log(result);
 		res.render('signin-post', {
 
