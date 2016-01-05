@@ -11,9 +11,7 @@ exports.createMember = function(userObject) {
 	return new Promise(function(resolve) {
 		utils.hashCard(userObject.card).then(function(card) {
 			userObject.card = card;
-			console.log('goodbye');
 		}).then(function() {
-			console.log('helllooooo');
 			resolve(db.insert('INSERT INTO members SET ?', userObject));
 		});
 	});

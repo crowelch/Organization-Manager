@@ -1,6 +1,7 @@
 {{#if meetingError}}
 	{{#if meetingError.noMeeting}}
 		<h2 class="text-center">There's no meeting today you scurvy curr!</h2>
+		<h4 class="text-center">Would You like to create an account instead?</h4>
 		{{>create-account-button}}
 	{{/if}}
 	{{#if meetingError.alreadySignedIn}}
