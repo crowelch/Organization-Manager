@@ -22,3 +22,32 @@ exports.select = function(queryString) {
 		});
 	});
 }
+
+exports.insert = function(queryString, queryObject) {
+	return new Promise(function(resolve, reject) {
+		var connection = mysql.createConnection(params);
+		connection.connect();
+
+		connection.query(queryString, queryObject, function(err, result) {
+			if(err) {
+				console.log('sql insert err', err.code);
+				if(err.code === 'ER_DUP_ENTRY') {
+					reject({
+						accountexists: true
+					});
+				} else {
+					reject(err);
+				}
+			} else {
+				console.log('result', result);
+				resolve(result.insertId);
+			}
+		});
+
+		connection.end(function(err) {
+			if(err) {
+				console.log(err);
+			}
+		});
+	});
+}
