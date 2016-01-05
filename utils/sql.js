@@ -5,38 +5,7 @@ var Promise = require('es6-promise').Promise;
 var _ = require('lodash');
 var params = require('../config/secrets.js').params;
 var utils = require('./utils');
-
-// function connection(query, options) {
-// 	console.log('in connection');
-// 	function queryCallback(error, result) {
-// 		if(error) {
-// 			reject(error);
-// 		}
-// 		resolve(result);
-// 		endConnection();
-// 	}
-
-// 	function endConnection() {
-// 		connection.end(function(err) {
-// 			if(err) {
-// 				console.log(err);
-// 			}
-// 			console.log('in conn end of conn');
-// 		});
-// 	}
-
-// 	var connection = mysql.createConnection(params);
-// 	connection.connect();
-
-// 	return new Promise(function(resolve, reject) {
-// 		if(options) {
-// 			connection.query(query, options, queryCallback);
-// 		} else {
-// 			connection.query(query, queryCallback);
-// 		}
-// 	});
-
-// };
+var db = require('./db');
 
 exports.putUser = function(userObject) {
 	console.dir(userObject);
@@ -241,41 +210,9 @@ exports.createMeeting = function(date) {
 };
 
 exports.getMembers = function() {
-	return new Promise(function(resolve, reject) {
-		var connection = mysql.createConnection(params);
-		connection.connect();
-
-		connection.query("SELECT * FROM members", function(err, result) {
-			if(err) {
-				reject(err);
-			}
-			resolve(result);
-		});
-
-		connection.end(function(err) {
-			if(err) {
-				console.log(err);
-			}
-		});
-	});
+	return db.select('SELECT * FROM members');
 };
 
 exports.getMeetings = function() {
-	return new Promise(function(resolve, reject) {
-		var connection = mysql.createConnection(params);
-		connection.connect();
-
-		connection.query("SELECT * FROM meetings", function(err, result) {
-			if(err) {
-				reject(err);
-			}
-			resolve(result);
-		});
-
-		connection.end(function(err) {
-			if(err) {
-				console.log(err);
-			}
-		});
-	});
+	return db.select("SELECT * FROM meetings");
 };
