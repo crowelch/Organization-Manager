@@ -40,7 +40,7 @@ exports.insert = function(queryString, queryObject) {
 				}
 			} else {
 				console.log('result', result);
-				resolve(result.insertId);
+				resolve(result);
 			}
 		});
 
