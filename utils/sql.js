@@ -283,7 +283,7 @@ exports.getMembersEmails = function() {
 				emailsCSV += value.email;
 				console.log(key);
 
-				if(key < result.length - 2) {
+				if(key < result.length - 1) {
 					emailsCSV += ',';
 				}
 			});
