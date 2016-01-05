@@ -5,11 +5,13 @@ var moment = require('moment');
 var Promise = require('es6-promise').Promise;
 var _ = require('lodash');
 var params = require('../config/secrets.js').params;
+var db = require('./db');
 
 exports.hashCompare = function(card) {
 	return new Promise(function(resolve, reject) {
 		var connection = mysql.createConnection(params);
 		connection.connect();
+
 		connection.query("SELECT * FROM members", function(err, result) {
 			if(err) {
 				console.log('err', err);
@@ -42,72 +44,47 @@ exports.hashCompare = function(card) {
 	});
 };
 
-exports.mNumberFinder = function(mnumber) {
-	console.log('in m#finder', mnumber);
+exports.memberLookupByMNumber = function(mnumber) {
+	var noAccountError = {
+		meetingError: {
+			noAccount: true
+		}
+	}
+
 	return new Promise(function(resolve, reject) {
-		var connection = mysql.createConnection(params);
-		connection.connect();
-		connection.query("SELECT * FROM members WHERE mNumber=" + mysql.escape(mnumber), function(err, result) {
-			if(err) {
-				console.log('err', err);
-				reject({
-					meetingError: {
-						databaseError: true
-					}
-				});
-			}
-
-			console.log('member found! - ', result);
-			if(result.length <= 0) {
-				console.log('koi');
-				reject({
-					meetingError: {
-						noAccount: true
-					}
-  				});
-			} else {
-				resolve(result[0].membersKey);
-			}
-		});
-
-		connection.end(function(err) {
-			if(err) {
-				console.log('mnumberfindercannotcloseerrror', err);
-			}
-		});
+		db.select('SELECT * FROM members WHERE mNumber=' + mysql.escape(mnumber))
+			.then(function(member) {
+				if(member.length <= 0 || member === undefined) {
+					reject(noAccountError);
+				} else {
+					resolve(member[0].membersKey);
+				}
+			}, function(error) {
+				reject(error);
+			});
 	});
 };
 
-exports.checkMeeting = function() {
-	console.log('in checkMeeting');
+exports.checkMeetingIsToday = function() {
+	var today = mysql.escape(moment().utcOffset(-4).format('YYYY-MM-DD'));
+	var noMeetingError = {
+		meetingError: {
+			noMeeting: true
+		}
+	}
+
 	return new Promise(function(resolve, reject) {
-		var today = mysql.escape(moment().utcOffset(-4).format('YYYY-MM-DD'));
-		console.log('today:', today);
-		var connection = mysql.createConnection(params);
-		connection.connect();
-
-		connection.query("SELECT * FROM meetings WHERE date=" + today, function(err, result) {
-			if(err) {
-				reject(err);
-			} else {
-				console.log('meeting?', result);
-				if(result.length <= 0) {
-					reject({
-						meetingError: {
-							noMeeting: true
-						}
-					});
-				} else {
-					resolve(result[0].meetingKey);
-				}
-			}
-		});
-
-		connection.end(function(err) {
-			if(err) {
-				console.log('mtgcannotcloseerrror', err);
-			}
-		});
+		db.select('SELECT * FROM meetings WHERE date=' + today)
+			.then(function(meetingList) {
+				if(meetingList.length <= 0
+					|| meetingList[0].meetingKey === undefined) {
+						reject(noMeetingError);
+					} else {
+						resolve(meetingList[0].meetingKey);
+					}
+			}, function(error) {
+				reject(error);
+			});
 	});
 };
 
