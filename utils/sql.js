@@ -171,25 +171,11 @@ exports.signIn = function(card) {
 };
 
 exports.createMeeting = function(date) {
-	console.log(date);
 	var insertDate = {
 		date: date
 	};
 
-	var connection = mysql.createConnection(params);
-	connection.connect();
-	connection.query("INSERT INTO meetings SET ?", insertDate, function(err, result) {
-		if(err) {
-			console.log(err);
-		}
-		console.log('meeting ID:', result.insertId);
-		console.log(result);
-	});
-	connection.end(function(err) {
-		if(err) {
-			console.log(err);
-		}
-	});
+	return db.insert('INSERT INTO meetings SET ?', insertDate);
 };
 
 exports.getMembers = function() {
