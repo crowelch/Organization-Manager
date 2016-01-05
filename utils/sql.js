@@ -184,39 +184,30 @@ exports.getMembers = function() {
 
 exports.getMembersEmails = function() {
 	return new Promise(function(resolve, reject) {
-		var connection = mysql.createConnection(params);
-		connection.connect();
-
-		connection.query("SELECT email FROM members", function(err, result) {
-			if(err) {
-				reject(err);
-			}
-
-			var emailsCSV = "";
-
-			_.forEach(result, function(value, key) {
-				emailsCSV += value.email;
-				console.log(key);
-
-				if(key < result.length - 1) {
-					emailsCSV += ',';
-				}
+		db.select('SELECT email FROM members')
+			.then(function(result) {
+				resolve(emailsJSONToCSV(result));
+			}, function(error) {
+				reject(error);
 			});
-
-			console.dir(emailsCSV);
-			console.log(result.length);
-
-			resolve(emailsCSV);
-		});
-
-		connection.end(function(err) {
-			if(err) {
-				console.log(err);
-			}
-		});
 	});
 };
 
+function emailsJSONToCSV(emailsJSON) {
+	var LAST_COMMA_POSITION = emailsJSON.length - 1;
+	var emailsCSV = "";
+
+	_.forEach(emailsJSON, function(value, position) {
+		emailsCSV += value.email;
+
+		if(position < LAST_COMMA_POSITION) {
+			emailsCSV += ',';
+		}
+	});
+
+	return emailsCSV;
+}
+
 exports.getMeetings = function() {
-	return db.select("SELECT * FROM meetings");
+	return db.select('SELECT * FROM meetings');
 };
