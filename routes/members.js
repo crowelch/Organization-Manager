@@ -27,7 +27,7 @@ router.get('/create', function(req, res, next) {
 });
 
 router.post('/create', function(req, res, next) {
-	db.putUser(req.body).then(function(result) {
+	db.createMember(req.body).then(function(result) {
 		res.render('account_created', {
 			id: result
 		});
