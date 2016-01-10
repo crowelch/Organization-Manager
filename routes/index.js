@@ -7,7 +7,7 @@ var db = require('../utils/sql');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Organization Manager' });
+  res.render('index', { title: 'UC Robotics Team' });
 });
 
 router.get('/create-account', function(req, res, next) {

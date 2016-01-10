@@ -30,12 +30,12 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', routes);
-app.use('/users', users);
-app.use('/submit', submit);
-app.use('/door', door);
-app.use('/members', members);
-app.use('/meetings', meetings);
+app.use('/orgman', routes);
+app.use('/orgman/users', users);
+app.use('/orgman/submit', submit);
+app.use('/orgman/door', door);
+app.use('/orgman/members', members);
+app.use('/orgman/meetings', meetings);
 
 //setup hbs partials
 var partialsDir = __dirname + '/views/partials';
