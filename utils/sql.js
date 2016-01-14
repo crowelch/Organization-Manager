@@ -23,6 +23,7 @@ exports.mNumberSignIn = function(providedMNumber) {
 
 		utils.checkMeetingIsToday().then(function(meetingKey) {
 			attendanceObject.meetingKey = meetingKey;
+			console.log('meetingKey', meetingKey);
 		}, function(error) {
 			reject(error);
 			throw new Error('No Meeting');

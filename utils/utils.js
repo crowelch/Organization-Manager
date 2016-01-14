@@ -73,6 +73,8 @@ exports.checkMeetingIsToday = function() {
 		}
 	}
 
+	console.log('today', today);
+
 	return new Promise(function(resolve, reject) {
 		db.select('SELECT * FROM meetings WHERE date=' + today)
 			.then(function(meetingList) {
