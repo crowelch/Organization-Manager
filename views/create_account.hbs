@@ -56,12 +56,6 @@
 			<input type="text" name="gradYear" id="gradYear" value="{{gradYear}}" placeholder="1998" class="form-control">
 		</div>
 	</div>
-	<div class="form-group">
-		<label for="card" class="col-sm-3 control-label">Swipe Card:</label>
-		<div class="col-sm-7">
-			<input type="text" name="card" id="card" value="{{card}}" placeholder="asdfghjkl;" class="form-control">
-		</div>
-	</div>
 	<div class="col-sm-offset-3 col-sm-7">
     	<button type="submit" class="btn btn-success">
     		<span class="fa fa-user-plus">
@@ -101,8 +95,6 @@
 			alert('major required');
 		} else if(gradYear === '') {
 			alert('grad year required');
-		} else if(card === '') {
-			alert('card swipe required');
 		} else {
 			return true;
 		}

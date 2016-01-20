@@ -75,7 +75,7 @@ router.get('/lookup', function(req, res, next) {
 
 router.post('/lookup', function(req, res, next) {
 	new Promise(function(resolve, reject) {
-		lookup(req.body.card, function(error, result) {
+		lookupById(req.body.mnumber, function(error, result) {
 			if(error) {
 				reject(error);
 			}
