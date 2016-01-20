@@ -74,14 +74,7 @@ router.get('/lookup', function(req, res, next) {
 });
 
 router.post('/lookup', function(req, res, next) {
-	new Promise(function(resolve, reject) {
-		lookupById(req.body.mnumber, function(error, result) {
-			if(error) {
-				reject(error);
-			}
-			resolve(result);
-		});
-	}).then(function(person) {
+	lookupById(req.body.mnumber).then(function(person) {
 		res.render('create_account', {
 		firstName: person.first_name,
 		lastName: person.last_name,
