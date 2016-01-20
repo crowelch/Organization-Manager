@@ -101,3 +101,15 @@ exports.hashCard = function(data) {
 		});
 	});
 };
+
+exports.verifyMNumber = function(mNumber) {
+	if(mNumber.charAt(0) === 'm') {
+		mNumber = mNumber.replace('m', 'M');
+	}
+
+	if(mNumber.charAt(0).toUpperCase() !== 'M') {
+		mNumber = 'M' + mNumber;
+	}
+
+	return Promise.resolve(mNumber);
+}

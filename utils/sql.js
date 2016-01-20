@@ -9,11 +9,7 @@ var db = require('./db');
 
 exports.createMember = function(userObject) {
 	return new Promise(function(resolve) {
-		utils.hashCard(userObject.card).then(function(card) {
-			userObject.card = card;
-		}).then(function() {
-			resolve(db.insert('INSERT INTO members SET ?', userObject));
-		});
+		resolve(db.insert('INSERT INTO members SET ?', userObject));
 	});
 };
 
@@ -28,8 +24,9 @@ exports.mNumberSignIn = function(providedMNumber) {
 			reject(error);
 			throw new Error('No Meeting');
 		}).then(function() {
-			return verifyMNumber(providedMNumber);
+			return utils.verifyMNumber(providedMNumber);
 		}).then(function(verifiedMNumber) {
+			console.log(verifiedMNumber);
 			return utils.memberLookupByMNumber(verifiedMNumber);
 		}).then(function(memberKey) {
 			attendanceObject.memberKey = memberKey;
@@ -106,21 +103,9 @@ function emailsJSONToCSV(emailsJSON) {
 		emailsCSV += value.email;
 
 		if(position < LAST_COMMA_POSITION) {
-			emailsCSV += ',';
+			emailsCSV += ';';
 		}
 	});
 
 	return emailsCSV;
-}
-
-function verifyMNumber(mNumber) {
-	if(mNumber.charAt(0) === 'm') {
-		mNumber = mNumber.replace('m', 'M');
-	}
-
-	if(mNumber.charAt(0).toUpperCase() !== 'M') {
-		mNumber = 'M' + mNumber;
-	}
-
-	return Promise.resolve(mNumber);
 }
