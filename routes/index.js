@@ -81,7 +81,7 @@ router.post('/lookup', function(req, res, next) {
 		major: person.major,
 		gradYear: person.graduation,
 		email: person.email,
-		card: req.body.card
+		mNumber: req.body.mnumber
 	});
 
 	}, function(error) {
