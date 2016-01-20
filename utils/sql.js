@@ -106,7 +106,7 @@ function emailsJSONToCSV(emailsJSON) {
 		emailsCSV += value.email;
 
 		if(position < LAST_COMMA_POSITION) {
-			emailsCSV += ',';
+			emailsCSV += ';';
 		}
 	});
 
