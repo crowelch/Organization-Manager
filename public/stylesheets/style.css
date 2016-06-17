@@ -19,12 +19,24 @@ form div {
 	padding-top: 10px;
 }
 
+.pad-left-11 {
+	padding-left: 20px;
+}
+
 .org-btn {
 	margin-top: 15px;
 }
 
 .hidden {
 	visibility: hidden;
+}
+
+.style-0 {
+	background-color: #ee5c5c;
+}
+
+.style-1 {
+	background-color: #8ef085;
 }
 
 .landing {

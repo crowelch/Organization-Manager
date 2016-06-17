@@ -1,5 +1,6 @@
 var request = require('request');
 var zlib = require('zlibjs');
+var utils = require('./utils');
 
 var lookup = function(type, id, callback) {
 	var req = request.post('http://tribunal.uc.edu/attendance/ajax/lookup', {
@@ -28,7 +29,8 @@ var lookup = function(type, id, callback) {
 				var data;
 				data = JSON.parse(decoded.toString());
 				err = err || data.err;
-				return callback(err, data);
+
+				callback(err, data);
 			});
 		});
 	});
@@ -40,6 +42,12 @@ exports.lookupByIso = function(iso, callback) {
 	return lookup('iso', cleanedIso, callback);
 };
 
-exports.lookupByUcid = function(ucid, callback) {
-	return lookup('ucid', ucid, callback);
+exports.lookupByUcid = function(ucid) {
+	return new Promise(function(resolve) {
+		utils.verifyMNumber(ucid).then(function(verifiedUcid) {
+			lookup('ucid', verifiedUcid, function(err, data) {
+				resolve(data);
+			});
+		});
+	});
 };

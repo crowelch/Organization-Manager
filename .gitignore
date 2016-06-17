@@ -1,3 +1,6 @@
+# Ignore Docker for now
+Dockerfile
+
 # Logs
 logs
 *.log
@@ -31,3 +34,7 @@ node_modules
 
 # Secret Files
 config
+
+# Generated Files
+*.txt
+*.md5
