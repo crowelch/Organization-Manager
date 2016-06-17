@@ -21,7 +21,7 @@ exports.select = function(queryString) {
 			}
 		});
 	});
-}
+};
 
 exports.insert = function(queryString, queryObject) {
 	return new Promise(function(resolve, reject) {
@@ -50,4 +50,4 @@ exports.insert = function(queryString, queryObject) {
 			}
 		});
 	});
-}
+};

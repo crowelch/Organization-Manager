@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var db = require('../utils/door');
+var doorFilename = require('../config/secrets').doorFilename;
 
 /* GET user ids for the door */
 router.use('/users', function(req, res, next) {
@@ -13,18 +14,19 @@ router.use('/users', function(req, res, next) {
 
 /* GET user ids for the door */
 router.get('/users', function(req, res, next) {
+	var filename = doorFilename + '.txt';
+	console.log('filename', filename);
 	var options = {
-	    root: 'public/',
+		root: 'public/',
 	};
-	var fileName = 'fightme.txt';
 
-	res.sendFile(fileName, options, function (err) {
-	    if (err) {
+	res.sendFile(filename, options, function (err) {
+	    if(err) {
 	    	console.log(err);
 	    	res.status(err.status).end();
 	    }
 	    else {
-	    	console.log('Sent:', fileName);
+	    	console.log('Sent:', filename);
 	    }
 	});
 });
@@ -34,16 +36,15 @@ router.get('/users/md5', function(req, res, next) {
 	var options = {
 	    root: 'public/',
 	};
-	var fileName = 'fightme.md5';
+	var filename = doorFilename + '.md5';
 
-	res.sendFile(fileName, options, function (err) {
+	res.sendFile(filename, options, function (err) {
 	    if (err) {
 	    	console.log(err);
 	    	res.status(err.status).end();
 	    }
 	    else {
-	    	console.log('Sent:', fileName);
-	    	//delete file?
+	    	console.log('Sent:', filename);
 	    }
 	});
 });

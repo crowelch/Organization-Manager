@@ -1,152 +1,65 @@
-var mysql = require('mysql');
-var Promise = require('es6-promise').Promise;
 var _ = require('lodash');
-var params = require('../config/secrets.js').params;
 var sha1 = require('sha1');
-var utils = require('./utils.js');
-var fs = require('fs');
+var utils = require('./utils');
+// var fs = require('fs');
+var fs = require('./fs_promise');
 var md5 = require('md5');
+var db = require('./db');
+var doorFilename = require('../config/secrets').doorFilename;
 
 exports.getAllowedUsers = function() {
-	return new Promise(function(resolve, reject) {
-		var connection = mysql.createConnection(params);
-		connection.connect();
+	var query = 'SELECT doorAccessKey FROM doorAccess WHERE accessAllowed=1';
+	var filename = 'public/' + doorFilename;
 
-		connection.query("SELECT doorAccessKey FROM doorAccess WHERE accessAllowed=1", function(err, result) {
-			if(err) {
-				reject(err);
-			}
+	return db.select(query).then(function(result) {
+		var fileString = '';
 
-			console.log('access key result', result);
-			var fileString = "";
-
-			_.forEach(result, function(key) {
-				console.log('key:', key);
-				fileString += key.doorAccessKey;
-				fileString += '\n';
-			});
-
-			console.log(fileString);
-
-			fs.writeFile('public/fightme.txt', fileString, function(error) {
-				if(error) {
-					reject('write file error:', error);
-				}
-
-				console.log('i am here');
-
-				fs.readFile('public/fightme.txt', function(err, buf) {
-					if(err) {
-						console.log(err);
-					} else {
-						console.log(buf);
-						console.log(md5(buf));
-						fs.writeFile('public/fightme.md5', md5(buf), function(error) {
-							resolve();
-						});
-					}
-				});
-			});
+		_.forEach(result, function(key) {
+			fileString += key.doorAccessKey;
+			fileString += '\n';
 		});
 
-		connection.end(function(err) {
-			if(err) {
-				reject(err);
-			}
-		});
+		console.log('filename', filename);
+		console.log('doorfilename', doorFilename);
+
+		return fileString;
+	}, function (error) {
+		console.log(error);
+	}).then(function(data) {
+		return fs.writeFile(filename + '.txt', data);
+	}).then(function() {
+		console.log('hiiii');
+		return fs.readFile(filename + '.txt');
+	}).then(function(buffer) {
+		console.log('how');
+		var md5Filename = filename + '.md5';
+		console.log('buffer', buffer);
+		return fs.writeFile(md5Filename, md5(buffer));
 	});
 };
 
 exports.saveLog = function(log) {
-	return new Promise(function(resolve, reject) {
-		var connection = mysql.createConnection(params);
-		connection.connect();
-
-		connection.query("INSERT INTO logs SET ?", log, function(err, result) {
-			if(err) {
-				reject(err);
-			}
-			resolve(result);
-		});
-
-		connection.end(function(err) {
-			if(err) {
-				reject(err);
-			}
-		});
-	});
+	var query = 'INSERT INTO logs SET ?';
+	return db.select(query, log);
 };
 
 exports.getLogs = function() {
-	return new Promise(function(resolve, reject) {
-		var connection = mysql.createConnection(params);
-		connection.connect();
-
-		connection.query("SELECT * FROM logs", function(err, result) {
-			if(err) {
-				reject(err);
-			}
-			resolve(result);
-		});
-
-		connection.end(function(err) {
-			if(err) {
-				reject(err);
-			}
-		});
-	});
+	var query = 'SELECT * FROM logs';
+	return db.select(query);
 };
 
 exports.registerDevice = function(userId, device) {
-	return new Promise(function(resolve, reject) {
-		var access = {
-			doorAccessKey: device,
-			memberKey: userId,
-			accessAllowed: 1
-		};
+	var access = {
+		doorAccessKey: device,
+		memberKey: userId,
+		accessAllowed: 1
+	};
 
-		var connection = mysql.createConnection(params);
-		connection.connect();
-
-		connection.query("INSERT INTO doorAccess SET ?", access, function(err, result) {
-			if(err) {
-				reject(err);
-			}
-			resolve(result);
-		});
-
-		connection.end(function(err) {
-			if(err) {
-				reject(err);
-			}
-		});
-
-	});
+	var query = 'INSERT INTO doorAccess SET ?';
+	return db.insert(query, access);
 };
 
 exports.getAllUsers = function() {
-	return new Promise(function(resolve, reject) {
-		var connection = mysql.createConnection(params);
-		connection.connect();
-
-		connection.query("SELECT * FROM members", function(err, result) {
-			if(err) {
-				reject(err);
-			}
-
-			result.sort(function(a, b) {
-			    var textA = a.firstName.toLowerCase();
-			    var textB = b.firstName.toLowerCase();
-			    return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
-			});
-
-			resolve(result);
-		});
-
-		connection.end(function(err) {
-			if(err) {
-				reject(err);
-			}
-		});
-	});
+	var query = 'SELECT * FROM members';
+	return db.select(query);
 };
