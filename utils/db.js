@@ -51,3 +51,27 @@ exports.insert = function(queryString, queryObject) {
 		});
 	});
 };
+
+exports.update = function(queryString) {
+	return new Promise(function(resolve, reject) {
+		var connection = mysql.createConnection(params);
+		connection.connect();
+
+		connection.query(queryString, function(err, result) {
+			if(err) {
+				console.log('sql update err', err.code);
+				reject(err);
+			} else {
+				resolve(result);
+			}
+		});
+
+		connection.end(function(err) {
+			if(err) {
+				console.log(err);
+			}
+		});
+	});
+};
+
+exports.escape = mysql.escape;

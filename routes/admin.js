@@ -1,86 +1,60 @@
 var express = require('express');
 var router = express.Router();
+var passport = require('passport');
+var passportConfig = require('../utils/passport');
 
-/* GET users listing. */
-router.get('/login', function(req, res, next) {
-	if (req.user) return res.redirect('/');
-	res.render('admin/login', {
-		title: 'Login'
-	});
+router.get('/', function(req, res) {
+	res.redirect('/admin/login');
 });
 
-/**
- * POST /login
- * Sign in using email and password.
- */
- router.post('/login', function(req, res, next) {
- 	req.assert('email', 'Email is not valid').isEmail();
- 	req.assert('password', 'Password cannot be blank').notEmpty();
-
- 	var errors = req.validationErrors();
-
- 	if (errors) {
- 		req.flash('errors', errors);
- 		return res.redirect('/login');
- 	}
-
- 	passport.authenticate('local', function(err, user, info) {
- 		if (err) return next(err);
- 		if (!user) {
- 			req.flash('errors', { msg: info.message });
- 			return res.redirect('/login');
- 		}
- 		req.logIn(user, function(err) {
- 			if (err) return next(err);
- 			req.flash('success', { msg: 'Success! You are logged in.' });
- 			res.redirect(req.session.returnTo || '/');
- 		});
- 	})(req, res, next);
- });
-
- router.get('logout', function(req, res, next) {
- 	req.logout();
- 	res.redirect('/');
- });
-
-//disable this feature on production
-router.get('signup', function(req, res) {
-	if (req.user) return res.redirect('/');
-	res.render('account/signup', {
-		title: 'Create Account'
-	});
-});
-
-router.post('signup', function(req, res, next) {
-	req.assert('email', 'Email is not valid').isEmail();
-	req.assert('password', 'Password must be at least 4 characters long').len(4);
-	req.assert('confirmPassword', 'Passwords do not match').equals(req.body.password);
-
-	var errors = req.validationErrors();
-
-	if (errors) {
-		req.flash('errors', errors);
-		return res.redirect('/signup');
-	}
-
-	var user = new User({
-		email: req.body.email,
-		password: req.body.password
-	});
-
-	User.findOne({ email: req.body.email }, function(err, existingUser) {
-		if (existingUser) {
-			req.flash('errors', { msg: 'Account with that email address already exists.' });
-			return res.redirect('/signup');
-		}
-		user.save(function(err) {
-			if (err) return next(err);
-			req.logIn(user, function(err) {
-				if (err) return next(err);
-				res.redirect('/');
-			});
+/* GET admin login. */
+router.get('/login', function(req, res) {
+	if (req.user) {
+		return res.redirect('/');
+	} else {
+		res.render('admin/login', {
+			title: 'Login'
 		});
-	});
+	}
 });
+
+/* POST login page. */
+router.post('/login',
+   passport.authenticate('local-login', {
+      successRedirect:'/welcome',
+      failureRedirect: '/login',
+      failureFlash: true
+   }), function(req, res) {
+      if(req.body.remember) {
+         req.session.cookie.maxAge = 1000 * 60 * 3;
+      } else {
+         req.session.cookie.expires = false;
+      }
+
+      res.redirect('/welcome');
+});
+
+router.get('/logout', function(req, res) {
+	req.logout();
+	res.redirect('/');
+});
+
+// Protect this feature on production
+router.get('/create', function(req, res) {
+	if(req.user) {
+		return res.redirect('/');
+	} else {
+		res.render('admin/create_account', {
+			title: 'Create Account'
+		});
+	}
+});
+
+/* POST signup page. */
+router.post('/create', passport.authenticate('local-signup', {
+   successRedirect: '/verification',
+   failureRedirect: '/create',
+   failureFlash: true
+}));
 
 module.exports = router;
