@@ -2,6 +2,7 @@ var mysql = require('mysql');
 var pasync = require('pasync');
 var bcrypt = require('bcrypt');
 var moment = require('moment');
+var momentTz = require('moment-timezone');
 var Promise = require('es6-promise').Promise;
 var _ = require('lodash');
 var params = require('../config/secrets.js').params;
@@ -66,7 +67,10 @@ exports.memberLookupByMNumber = function(mnumber) {
 };
 
 exports.checkMeetingIsToday = function() {
-	var today = mysql.escape(moment().utcOffset(-4).format('YYYY-MM-DD'));
+	var currentTimezone = moment.tz.guess();
+	var currentUTCOffset = moment.tz(currentTimezone).utcOffset();
+	var today = mysql.escape(moment().utcOffset(currentUTCOffset).format('YYYY-MM-DD'));
+
 	var noMeetingError = {
 		meetingError: {
 			noMeeting: true
@@ -76,7 +80,7 @@ exports.checkMeetingIsToday = function() {
 	console.log('today', today);
 
 	return new Promise(function(resolve, reject) {
-		db.select('SELECT * FROM meetings WHERE date=' + today)
+		db.select('SELECT * FROM meetings WHERE DATE_FORMAT(date, \'%y-%m-%d\') = DATE_FORMAT(' + today + ", \'%y-%m-%d\'")
 			.then(function(meetingList) {
 				if(meetingList.length <= 0
 					|| meetingList[0].meetingKey === undefined) {
