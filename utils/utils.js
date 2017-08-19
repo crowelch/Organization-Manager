@@ -80,7 +80,7 @@ exports.checkMeetingIsToday = function() {
 	console.log('today', today);
 
 	return new Promise(function(resolve, reject) {
-		db.select('SELECT * FROM meetings WHERE DATE_FORMAT(date, \'%y-%m-%d\') = DATE_FORMAT(' + today + ", \'%y-%m-%d\'")
+		db.select('SELECT * FROM meetings WHERE date=' + today)
 			.then(function(meetingList) {
 				if(meetingList.length <= 0
 					|| meetingList[0].meetingKey === undefined) {
