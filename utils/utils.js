@@ -68,9 +68,7 @@ exports.memberLookupByMNumber = function(mnumber) {
 
 exports.checkMeetingIsToday = function() {
 	var currentTimezone = moment.tz.guess();
-	var currentUTCOffset = moment.tz(currentTimezone).utcOffset();
-	var today = mysql.escape(moment().utcOffset(currentUTCOffset).format('YYYY-MM-DD'));
-
+	var today = mysql.escape(moment.tz(currentTimezone).format('YYYY-MM-DD'));
 	var noMeetingError = {
 		meetingError: {
 			noMeeting: true
@@ -80,7 +78,7 @@ exports.checkMeetingIsToday = function() {
 	console.log('today', today);
 
 	return new Promise(function(resolve, reject) {
-		db.select('SELECT * FROM meetings WHERE date=' + today)
+		db.select('SELECT * FROM meetings date=' + today)
 			.then(function(meetingList) {
 				if(meetingList.length <= 0
 					|| meetingList[0].meetingKey === undefined) {
